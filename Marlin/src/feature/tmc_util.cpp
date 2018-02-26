@@ -772,4 +772,53 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   }
 #endif // HAVE_TMC2130
 
+template<typename TMC>
+static void test_connection(TMC &st, const char name[]) {
+  SERIAL_ECHOPGM("Testing ");
+  SERIAL_ECHO(name);
+  SERIAL_ECHOPGM(" connection...");
+  switch(st.test_connection()) {
+    case 0: SERIAL_ECHOPGM("OK"); break;
+    case 1: SERIAL_ECHOPGM("Error(0xFFFFFFFF)"); break;
+    case 2: SERIAL_ECHOPGM("Error(0x0)"); break;
+  }
+  SERIAL_EOL();
+}
+
+void test_tmc_connection() {
+  #if ENABLED(X_IS_TMC2130)
+    test_connection(stepperX, extended_axis_codes[TMC_X]);
+  #endif
+  #if ENABLED(Y_IS_TMC2130)
+    test_connection(stepperY, extended_axis_codes[TMC_Y]);
+  #endif
+  #if ENABLED(Z_IS_TMC2130)
+    test_connection(stepperZ, extended_axis_codes[TMC_Z]);
+  #endif
+  #if ENABLED(X2_IS_TMC2130)
+    test_connection(stepperX2, extended_axis_codes[TMC_X2]);
+  #endif
+  #if ENABLED(Y2_IS_TMC2130)
+    test_connection(stepperY2, extended_axis_codes[TMC_Y2]);
+  #endif
+  #if ENABLED(Z2_IS_TMC2130)
+    test_connection(stepperZ2, extended_axis_codes[TMC_Z2]);
+  #endif
+  #if ENABLED(E0_IS_TMC2130)
+    test_connection(stepperE0, extended_axis_codes[TMC_E0]);
+  #endif
+  #if ENABLED(E1_IS_TMC2130)
+    test_connection(stepperE1, extended_axis_codes[TMC_E1]);
+  #endif
+  #if ENABLED(E2_IS_TMC2130)
+    test_connection(stepperE2, extended_axis_codes[TMC_E2]);
+  #endif
+  #if ENABLED(E3_IS_TMC2130)
+    test_connection(stepperE3, extended_axis_codes[TMC_E3]);
+  #endif
+  #if ENABLED(E4_IS_TMC2130)
+    test_connection(stepperE4, extended_axis_codes[TMC_E4]);
+  #endif
+}
+
 #endif // HAS_TRINAMIC
