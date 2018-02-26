@@ -894,6 +894,10 @@ void setup() {
   #if ENABLED(USE_WATCHDOG) // Reinit watchdog after HAL_get_reset_source call
     watchdog_init();
   #endif
+
+  #if HAS_TRINAMIC
+    test_tmc_connection();
+  #endif
 }
 
 /**
