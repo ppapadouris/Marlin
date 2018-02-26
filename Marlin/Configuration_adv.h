@@ -128,7 +128,7 @@
  * Also, if the temperature is set to a value below mintemp, it will not be changed by autotemp.
  * On an Ultimaker, some initial testing worked with M109 S215 B260 F1 in the start.gcode
  */
-#define AUTOTEMP
+//#define AUTOTEMP
 #if ENABLED(AUTOTEMP)
   #define AUTOTEMP_OLDWEIGHT 0.98
 #endif
@@ -194,10 +194,10 @@
  * The fan will turn on automatically whenever any stepper is enabled
  * and turn off after a set period after all steppers are turned off.
  */
-//#define USE_CONTROLLER_FAN
+#define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1        // Set a custom pin for the controller fan
-  #define CONTROLLERFAN_SECS 60          // Duration in seconds for the fan to run after all motors are disabled
+  #define CONTROLLER_FAN_PIN 44        // Set a custom pin for the controller fan
+  #define CONTROLLERFAN_SECS 30          // Duration in seconds for the fan to run after all motors are disabled
   #define CONTROLLERFAN_SPEED 255        // 255 == full speed
 #endif
 
@@ -225,7 +225,11 @@
  * Multiple extruders can be assigned to the same pin in which case
  * the fan will turn on when any selected extruder is above the threshold.
  */
-#define E0_AUTO_FAN_PIN -1
+#if MB(RAMPS_14_EFB)
+  #define E0_AUTO_FAN_PIN 66
+#elif MB(ARCHIM2)
+  #define E0_AUTO_FAN_PIN FAN1_PIN
+#endif
 #define E1_AUTO_FAN_PIN -1
 #define E2_AUTO_FAN_PIN -1
 #define E3_AUTO_FAN_PIN -1
@@ -248,9 +252,9 @@
 /**
  * M355 Case Light on-off / brightness
  */
-//#define CASE_LIGHT_ENABLE
+#define CASE_LIGHT_ENABLE
 #if ENABLED(CASE_LIGHT_ENABLE)
-  //#define CASE_LIGHT_PIN 4                  // Override the default pin if needed
+  #define CASE_LIGHT_PIN 49                   // Override the default pin if needed
   #define INVERT_CASE_LIGHT false             // Set true if Case Light is ON when pin is LOW
   #define CASE_LIGHT_DEFAULT_ON true          // Set default power-up state on
   #define CASE_LIGHT_DEFAULT_BRIGHTNESS 105   // Set default power-up brightness (0-255, requires PWM pin)
@@ -310,7 +314,7 @@
   #endif
 #endif
 
-//#define Z_DUAL_STEPPER_DRIVERS
+#define Z_DUAL_STEPPER_DRIVERS
 #if ENABLED(Z_DUAL_STEPPER_DRIVERS)
   //#define Z_DUAL_ENDSTOPS
   #if ENABLED(Z_DUAL_ENDSTOPS)
@@ -365,10 +369,17 @@
 // @section homing
 
 // Homing hits each endstop, retracts by these distances, then does a slower bump.
-#define X_HOME_BUMP_MM 5
-#define Y_HOME_BUMP_MM 5
-#define Z_HOME_BUMP_MM 2
-#define HOMING_BUMP_DIVISOR { 2, 2, 4 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#if MB(RAMPS_14_EFB)
+  #define X_HOME_BUMP_MM 0
+  #define Y_HOME_BUMP_MM 0
+  #define Z_HOME_BUMP_MM 0
+  #define HOMING_BUMP_DIVISOR { 2, 2, 1 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#elif MB(ARCHIM2)
+  #define X_HOME_BUMP_MM 5
+  #define Y_HOME_BUMP_MM 5
+  #define Z_HOME_BUMP_MM 2
+  #define HOMING_BUMP_DIVISOR { 2, 2, 10 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#endif
 //#define QUICK_HOME                     // If homing includes X and Y, do a diagonal move initially
 
 // When G28 is called, this option will make Y home before X
@@ -506,7 +517,7 @@
 //#define LCD_TIMEOUT_TO_STATUS 15000
 
 // Add an 'M73' G-code to set the current percentage
-//#define LCD_SET_PROGRESS_MANUALLY
+#define LCD_SET_PROGRESS_MANUALLY
 
 #if ENABLED(SDSUPPORT) || ENABLED(LCD_SET_PROGRESS_MANUALLY)
   //#define LCD_PROGRESS_BAR              // Show a progress bar on HD44780 LCDs for SD printing
@@ -710,13 +721,13 @@
  *
  * Warning: Does not respect endstops!
  */
-//#define BABYSTEPPING
+#define BABYSTEPPING
 #if ENABLED(BABYSTEPPING)
   //#define BABYSTEP_XY              // Also enable X/Y Babystepping. Not supported on DELTA!
   #define BABYSTEP_INVERT_Z false    // Change if Z babysteps should go the other way
-  #define BABYSTEP_MULTIPLICATOR 1   // Babysteps are very small. Increase for faster motion.
+  #define BABYSTEP_MULTIPLICATOR 40 // Babysteps are very small. Increase for faster motion.
   //#define BABYSTEP_ZPROBE_OFFSET   // Enable to combine M851 and Babystepping
-  //#define DOUBLECLICK_FOR_Z_BABYSTEPPING // Double-click on the Status Screen for Z Babystepping.
+  #define DOUBLECLICK_FOR_Z_BABYSTEPPING // Double-click on the Status Screen for Z Babystepping.
   #define DOUBLECLICK_MAX_INTERVAL 1250 // Maximum interval between clicks, in milliseconds.
                                         // Note: Extra time may be added to mitigate controller latency.
   //#define BABYSTEP_ZPROBE_GFX_OVERLAY // Enable graphical overlay on Z-offset editor
@@ -785,7 +796,7 @@
 //
 // G2/G3 Arc Support
 //
-#define ARC_SUPPORT               // Disable this feature to save ~3226 bytes
+//#define ARC_SUPPORT               // Disable this feature to save ~3226 bytes
 #if ENABLED(ARC_SUPPORT)
   #define MM_PER_ARC_SEGMENT  1   // Length of each arc segment
   #define N_ARC_CORRECTION   25   // Number of intertpolated segments between corrections
@@ -932,7 +943,7 @@
  * Requires NOZZLE_PARK_FEATURE.
  * This feature is required for the default FILAMENT_RUNOUT_SCRIPT.
  */
-//#define ADVANCED_PAUSE_FEATURE
+#define ADVANCED_PAUSE_FEATURE
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
   #define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
@@ -1056,13 +1067,13 @@
  */
 #define HAVE_TMC2130
 #if ENABLED(HAVE_TMC2130)  // Choose your axes here. This is mandatory!
-  //#define X_IS_TMC2130
+  #define X_IS_TMC2130
   //#define X2_IS_TMC2130
   #define Y_IS_TMC2130
   //#define Y2_IS_TMC2130
-  //#define Z_IS_TMC2130
-  //#define Z2_IS_TMC2130
-  //#define E0_IS_TMC2130
+  #define Z_IS_TMC2130
+  #define Z2_IS_TMC2130
+  #define E0_IS_TMC2130
   //#define E1_IS_TMC2130
   //#define E2_IS_TMC2130
   //#define E3_IS_TMC2130
@@ -1079,13 +1090,13 @@
  * You'll also need the TMC2208Stepper Arduino library
  * (https://github.com/teemuatlut/TMC2208Stepper).
  */
-#define HAVE_TMC2208
+//#define HAVE_TMC2208
 #if ENABLED(HAVE_TMC2208)  // Choose your axes here. This is mandatory!
   //#define X_IS_TMC2208
   //#define X2_IS_TMC2208
   //#define Y_IS_TMC2208
   //#define Y2_IS_TMC2208
-  #define Z_IS_TMC2208
+  //#define Z_IS_TMC2208
   //#define Z2_IS_TMC2208
   //#define E0_IS_TMC2208
   //#define E1_IS_TMC2208
@@ -1094,9 +1105,9 @@
   //#define E4_IS_TMC2208
 #endif
 
-#define HAVE_TMC2660
+//#define HAVE_TMC2660
 #if ENABLED(HAVE_TMC2660)  // Choose your axes here. This is mandatory!
-  #define X_IS_TMC2660
+  //#define X_IS_TMC2660
   //#define X2_IS_TMC2660
   //#define Y_IS_TMC2660
   //#define Y2_IS_TMC2660
@@ -1109,44 +1120,61 @@
   //#define E4_IS_TMC2660
 #endif
 
-#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC2660)
+#if MB(RAMPS_14_EFB)
+  #define HAVE_TMC2130
+  #define HAVE_TMC2208
+  #define X_IS_TMC2130
+  #define Y_IS_TMC2130
+  #define Z_IS_TMC2208
+  #define Z2_IS_TMC2208
+  #define E0_IS_TMC2130
+#elif MB(ARCHIM2)
+  #define HAVE_TMC2130
+  #define X_IS_TMC2130
+  #define Y_IS_TMC2130
+  #define Z_IS_TMC2130
+  #define Z2_IS_TMC2130
+  #define E0_IS_TMC2130
+#endif
 
-  #define R_SENSE           0.10  // R_sense resistor for SilentStepStick2130
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC2660)
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
+  #if MB(RAMPS_14_EFB)
+    #define R_SENSE           0.10  // R_sense resistor for SilentStepStick2130
 
-  #define X_CURRENT          800  // rms current in mA. Multiply by 1.41 for peak current.
-  #define X_MICROSTEPS        16  // 0..256
+    #define X_CURRENT         1150  // rms current in mA. Multiply by 1.41 for peak current.
+    #define X_MICROSTEPS        16  // 0..256
 
-  #define Y_CURRENT          600
-  #define Y_MICROSTEPS        16
+    #define Y_CURRENT         1100
+    #define Y_MICROSTEPS        16
 
-  #define Z_CURRENT          700
-  #define Z_MICROSTEPS        16
+    #define Z_CURRENT          800
+    #define Z_MICROSTEPS         8
 
-  #define X2_CURRENT         800
-  #define X2_MICROSTEPS       16
+    #define Z2_CURRENT         800
+    #define Z2_MICROSTEPS        8
 
-  #define Y2_CURRENT         800
-  #define Y2_MICROSTEPS       16
+    #define E0_CURRENT         850
+    #define E0_MICROSTEPS       16
+  #elif MB(ARCHIM2)
+    #define R_SENSE           0.22  // R_sense resistor for SilentStepStick2130
 
-  #define Z2_CURRENT         800
-  #define Z2_MICROSTEPS       16
+    #define X_CURRENT          960  // rms current in mA. Multiply by 1.41 for peak current.
+    #define X_MICROSTEPS        16  // 0..256
 
-  #define E0_CURRENT         800
-  #define E0_MICROSTEPS       16
+    #define Y_CURRENT          960
+    #define Y_MICROSTEPS        16
 
-  #define E1_CURRENT         800
-  #define E1_MICROSTEPS       16
+    #define Z_CURRENT          800
+    #define Z_MICROSTEPS         8
 
-  #define E2_CURRENT         800
-  #define E2_MICROSTEPS       16
+    #define Z2_CURRENT         800
+    #define Z2_MICROSTEPS        8
 
-  #define E3_CURRENT         800
-  #define E3_MICROSTEPS       16
-
-  #define E4_CURRENT         800
-  #define E4_MICROSTEPS       16
+    #define E0_CURRENT         750
+    #define E0_MICROSTEPS       16
+  #endif
 
   /**
    * Override default SPI pins for TMC2130 and TMC2660 drivers here.
@@ -1169,10 +1197,12 @@
    * The default SW SPI pins are defined the respective pins files,
    * but you can override or define them here.
    */
-  //#define TMC_USE_SW_SPI
-  //#define TMC_SW_MOSI       -1
-  //#define TMC_SW_MISO       -1
-  //#define TMC_SW_SCK        -1
+  #if MB(ARCHIM2)
+    #define TMC_USE_SW_SPI
+    //#define TMC_SW_MOSI       -1
+    //#define TMC_SW_MISO       -1
+    //#define TMC_SW_SCK        -1
+  #endif
 
   /**
    * TMC2130, TMC2208 only
@@ -1190,7 +1220,7 @@
    * and increased if the measurement is lower then INCREASE_CURRENT_THRS.
    * Current will never be increased over the configured values nor reduced below 50%.
    */
-  //#define ADAPTIVE_CURRENT
+  #define ADAPTIVE_CURRENT
 
   #if ENABLED(ADAPTIVE_CURRENT)
     #define REDUCE_CURRENT_THRS     3
@@ -1208,7 +1238,7 @@
    * M912 - Clear stepper driver overtemperature pre-warn condition flag.
    * M122 S0/1 - Report driver parameters (Requires TMC_DEBUG)
    */
-  //#define MONITOR_DRIVER_STATUS
+  #define MONITOR_DRIVER_STATUS
 
   #if ENABLED(MONITOR_DRIVER_STATUS)
     #define CURRENT_STEP_DOWN     50  // [mA]
@@ -1229,8 +1259,8 @@
   #define X2_HYBRID_THRESHOLD    100
   #define Y_HYBRID_THRESHOLD     100
   #define Y2_HYBRID_THRESHOLD    100
-  #define Z_HYBRID_THRESHOLD       3
-  #define Z2_HYBRID_THRESHOLD      3
+  #define Z_HYBRID_THRESHOLD      20
+  #define Z2_HYBRID_THRESHOLD     20
   #define E0_HYBRID_THRESHOLD     30
   #define E1_HYBRID_THRESHOLD     30
   #define E2_HYBRID_THRESHOLD     30
@@ -1253,7 +1283,7 @@
   #define SENSORLESS_HOMING // TMC2130 only
 
   #if ENABLED(SENSORLESS_HOMING)
-    #define X_HOMING_SENSITIVITY  8
+    #define X_HOMING_SENSITIVITY  6
     #define Y_HOMING_SENSITIVITY  8
     #define Z_HOMING_SENSITIVITY  8
   #endif
@@ -1274,7 +1304,7 @@
    * Use M915 Snn to specify the current.
    * Use M925 Znn to add extra Z height to Z_MAX_POS.
    */
-  //#define TMC_Z_CALIBRATION
+  #define TMC_Z_CALIBRATION
   #if ENABLED(TMC_Z_CALIBRATION)
     #define CALIBRATION_CURRENT 250
     #define CALIBRATION_EXTRA_HEIGHT 10
@@ -1491,7 +1521,7 @@
 /**
  * M43 - display pin status, watch pins for changes, watch endstops & toggle LED, Z servo probe test, toggle pins
  */
-//#define PINS_DEBUGGING
+#define PINS_DEBUGGING
 
 /**
  * Auto-report temperatures with M155 S<seconds>

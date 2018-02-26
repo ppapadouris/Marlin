@@ -129,6 +129,14 @@
   #define E1_CS_PIN        19   // PA10 E2_nCS
 #endif
 
+#define Z2_STEP_PIN        22   // PB26 E2_STEP *
+#define Z2_DIR_PIN         97   // PB24 E2_DIR -AddOns *
+#define Z2_ENABLE_PIN      18   // PA11 E2-EN
+#ifndef Z2_CS_PIN
+  #define Z2_CS_PIN          19   // PA10 E2_nCS
+#endif
+#define Z2_DIAG_PIN        25   // PD0 E2_DIAG
+
 //
 // Software SPI pins for TMC2130 stepper drivers.
 // Required for the Archim2 board.
