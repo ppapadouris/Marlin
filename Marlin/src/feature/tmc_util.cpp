@@ -298,9 +298,24 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     TMC_S2VSB,
     TMC_S2VSA
   };
-  static void drv_status_print_hex(const TMC_AxisEnum axis, const uint32_t drv_status) {
-    _tmc_say_axis(axis);
-    SERIAL_ECHOPGM(" = 0x");
+  enum TMC_get_registers_enum {
+    TMC_AXIS_CODES,
+    TMC_GET_GCONF,
+    TMC_GET_IHOLD_IRUN,
+    TMC_GET_GSTAT,
+    TMC_GET_IOIN,
+    TMC_GET_TPOWERDOWN,
+    TMC_GET_TSTEP,
+    TMC_GET_TPWMTHRS,
+    TMC_GET_TCOOLTHRS,
+    TMC_GET_THIGH,
+    TMC_GET_CHOPCONF,
+    TMC_GET_COOLCONF,
+    TMC_GET_PWMCONF,
+    TMC_GET_PWM_SCALE,
+    TMC_GET_DRV_STATUS
+  };
+  static void print_32b_hex(const uint32_t drv_status) {
     for (int B = 24; B >= 8; B -= 8){
       SERIAL_PRINT((drv_status >> (B + 4)) & 0xF, HEX);
       SERIAL_PRINT((drv_status >> B) & 0xF, HEX);
@@ -308,7 +323,6 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     }
     SERIAL_PRINT((drv_status >> 4) & 0xF, HEX);
     SERIAL_PRINT((drv_status) & 0xF, HEX);
-    SERIAL_EOL();
   }
 
   #if ENABLED(HAVE_TMC2130)
@@ -414,7 +428,16 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       case TMC_DRV_OTPW:      if (st.otpw())         SERIAL_CHAR('X'); break;
       case TMC_OT:            if (st.ot())           SERIAL_CHAR('X'); break;
       case TMC_DRV_CS_ACTUAL: SERIAL_PRINT(st.cs_actual(), DEC);       break;
-      case TMC_DRV_STATUS_HEX:drv_status_print_hex(axis, st.DRV_STATUS()); break;
+      case TMC_DRV_STATUS_HEX: {
+        uint32_t drv_status = st.DRV_STATUS();
+        SERIAL_ECHOPGM("\t");
+        SERIAL_ECHO(extended_axis_codes[axis]);
+        SERIAL_ECHOPGM(" = 0x");
+        print_32b_hex(drv_status);
+        if (drv_status == 0xFFFFFFFF || drv_status == 0) SERIAL_ECHOPGM("\t Bad response!");
+        SERIAL_EOL();
+        break;
+      }
       default: tmc_parse_drv_status(st, i); break;
     }
   }
@@ -575,6 +598,125 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     #endif
     DRV_REPORT("Driver registers:",  TMC_DRV_STATUS_HEX);
     SERIAL_EOL();
+  }
+
+  #if ENABLED(HAVE_TMC2130)
+    static void tmc_get_registers(TMC2130Stepper &st, TMC_AxisEnum axis, const TMC_get_registers_enum i) {
+      #define PRINT_2130REGISTER(REG_CASE) case TMC_GET_##REG_CASE: SERIAL_ECHOPGM("0x"); print_32b_hex(st.REG_CASE()); break;
+      switch(i) {
+        case TMC_AXIS_CODES: SERIAL_ECHO(extended_axis_codes[axis]); break;
+        PRINT_2130REGISTER(GCONF)
+        PRINT_2130REGISTER(IHOLD_IRUN)
+        PRINT_2130REGISTER(GSTAT)
+        PRINT_2130REGISTER(IOIN)
+        PRINT_2130REGISTER(TPOWERDOWN)
+        PRINT_2130REGISTER(TSTEP)
+        PRINT_2130REGISTER(TPWMTHRS)
+        PRINT_2130REGISTER(TCOOLTHRS)
+        PRINT_2130REGISTER(THIGH)
+        PRINT_2130REGISTER(CHOPCONF)
+        PRINT_2130REGISTER(COOLCONF)
+        PRINT_2130REGISTER(PWMCONF)
+        PRINT_2130REGISTER(PWM_SCALE)
+        PRINT_2130REGISTER(DRV_STATUS)
+        default: SERIAL_ECHOPGM("-\t"); break;
+      }
+      SERIAL_CHAR('\t');
+    }
+  #endif
+  #if ENABLED(HAVE_TMC2208)
+    static void tmc_get_registers(TMC2208Stepper &st, TMC_AxisEnum axis, const TMC_get_registers_enum i) {
+      #define PRINT_2208REGISTER(REG_CASE) case TMC_GET_##REG_CASE: SERIAL_ECHOPGM("0x"); st.REG_CASE(&data); print_32b_hex(data); break;
+      uint32_t data = 0ul;
+      switch(i) {
+        case TMC_AXIS_CODES: SERIAL_ECHO(extended_axis_codes[axis]); break;
+        PRINT_2208REGISTER(GCONF)
+        PRINT_2208REGISTER(IHOLD_IRUN)
+        PRINT_2208REGISTER(GSTAT)
+        PRINT_2208REGISTER(IOIN)
+        PRINT_2208REGISTER(TPOWERDOWN)
+        PRINT_2208REGISTER(TSTEP)
+        PRINT_2208REGISTER(TPWMTHRS)
+        PRINT_2208REGISTER(CHOPCONF)
+        PRINT_2208REGISTER(PWMCONF)
+        PRINT_2208REGISTER(PWM_SCALE)
+        PRINT_2208REGISTER(DRV_STATUS)
+        default: SERIAL_ECHOPGM("-\t"); break;
+      }
+      SERIAL_CHAR('\t');
+    }
+  #endif
+
+  static void tmc_get_registers(TMC_get_registers_enum i, bool print_x, bool print_y, bool print_z, bool print_e) {
+    if (print_x) {
+      #if X_IS_TRINAMIC
+        tmc_get_registers(stepperX, TMC_X, i);
+      #endif
+      #if X2_IS_TRINAMIC
+        tmc_get_registers(stepperX2, TMC_X2, i);
+      #endif
+    }
+
+    if (print_y) {
+      #if Y_IS_TRINAMIC
+        tmc_get_registers(stepperY, TMC_Y, i);
+      #endif
+      #if Y2_IS_TRINAMIC
+        tmc_get_registers(stepperY2, TMC_Y2, i);
+      #endif
+    }
+
+    if (print_z) {
+      #if Z_IS_TRINAMIC
+        tmc_get_registers(stepperZ, TMC_Z, i);
+      #endif
+      #if Z2_IS_TRINAMIC
+        tmc_get_registers(stepperZ2, TMC_Z2, i);
+      #endif
+    }
+
+    if (print_e) {
+      #if E0_IS_TRINAMIC
+        tmc_get_registers(stepperE0, TMC_E0, i);
+      #endif
+      #if E1_IS_TRINAMIC
+        tmc_get_registers(stepperE1, TMC_E1, i);
+      #endif
+      #if E2_IS_TRINAMIC
+        tmc_get_registers(stepperE2, TMC_E2, i);
+      #endif
+      #if E3_IS_TRINAMIC
+        tmc_get_registers(stepperE3, TMC_E3, i);
+      #endif
+      #if E4_IS_TRINAMIC
+        tmc_get_registers(stepperE4, TMC_E4, i);
+      #endif
+    }
+
+    SERIAL_EOL();
+  }
+
+  void tmc_get_registers() {
+    bool print_axis[XYZE],
+         print_all = true;
+    LOOP_XYZE(i) if (parser.seen(axis_codes[i])) { print_axis[i] = true; print_all = false; }
+
+    #define TMC_GET_REG(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL); tmc_get_registers(ITEM, print_axis[X_AXIS]||print_all, print_axis[Y_AXIS]||print_all, print_axis[Z_AXIS]||print_all, print_axis[E_AXIS]||print_all); }while(0)
+    TMC_GET_REG("\t\t\t",         TMC_AXIS_CODES);
+    TMC_GET_REG("GCONF\t\t",      TMC_GET_GCONF);
+    TMC_GET_REG("IHOLD_IRUN\t",   TMC_GET_IHOLD_IRUN);
+    TMC_GET_REG("GSTAT\t\t",      TMC_GET_GSTAT);
+    TMC_GET_REG("IOIN\t\t",       TMC_GET_IOIN);
+    TMC_GET_REG("TPOWERDOWN\t",   TMC_GET_TPOWERDOWN);
+    TMC_GET_REG("TSTEP\t\t",      TMC_GET_TSTEP);
+    TMC_GET_REG("TPWMTHRS\t",     TMC_GET_TPWMTHRS);
+    TMC_GET_REG("TCOOLTHRS\t",    TMC_GET_TCOOLTHRS);
+    TMC_GET_REG("THIGH\t\t",      TMC_GET_THIGH);
+    TMC_GET_REG("CHOPCONF\t",     TMC_GET_CHOPCONF);
+    TMC_GET_REG("COOLCONF\t",     TMC_GET_COOLCONF);
+    TMC_GET_REG("PWMCONF\t",      TMC_GET_PWMCONF);
+    TMC_GET_REG("PWM_SCALE\t",    TMC_GET_PWM_SCALE);
+    TMC_GET_REG("DRV_STATUS\t",   TMC_GET_DRV_STATUS);
   }
 
 #endif // TMC_DEBUG
