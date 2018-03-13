@@ -431,7 +431,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       case TMC_DRV_STATUS_HEX: {
         uint32_t drv_status = st.DRV_STATUS();
         SERIAL_ECHOPGM("\t");
-        SERIAL_ECHO(extended_axis_codes[axis]);
+        _tmc_say_axis(axis);
         SERIAL_ECHOPGM(" = 0x");
         print_32b_hex(drv_status);
         if (drv_status == 0xFFFFFFFF || drv_status == 0) SERIAL_ECHOPGM("\t Bad response!");
@@ -604,7 +604,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     static void tmc_get_registers(TMC2130Stepper &st, TMC_AxisEnum axis, const TMC_get_registers_enum i) {
       #define PRINT_2130REGISTER(REG_CASE) case TMC_GET_##REG_CASE: SERIAL_ECHOPGM("0x"); print_32b_hex(st.REG_CASE()); break;
       switch(i) {
-        case TMC_AXIS_CODES: SERIAL_ECHO(extended_axis_codes[axis]); break;
+        case TMC_AXIS_CODES: SERIAL_CHAR('\t'); _tmc_say_axis(axis); break;
         PRINT_2130REGISTER(GCONF)
         PRINT_2130REGISTER(IHOLD_IRUN)
         PRINT_2130REGISTER(GSTAT)
@@ -629,7 +629,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       #define PRINT_2208REGISTER(REG_CASE) case TMC_GET_##REG_CASE: SERIAL_ECHOPGM("0x"); st.REG_CASE(&data); print_32b_hex(data); break;
       uint32_t data = 0ul;
       switch(i) {
-        case TMC_AXIS_CODES: SERIAL_ECHO(extended_axis_codes[axis]); break;
+        case TMC_AXIS_CODES: SERIAL_CHAR('\t'); _tmc_say_axis(axis); break;
         PRINT_2208REGISTER(GCONF)
         PRINT_2208REGISTER(IHOLD_IRUN)
         PRINT_2208REGISTER(GSTAT)
@@ -702,7 +702,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     LOOP_XYZE(i) if (parser.seen(axis_codes[i])) { print_axis[i] = true; print_all = false; }
 
     #define TMC_GET_REG(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL); tmc_get_registers(ITEM, print_axis[X_AXIS]||print_all, print_axis[Y_AXIS]||print_all, print_axis[Z_AXIS]||print_all, print_axis[E_AXIS]||print_all); }while(0)
-    TMC_GET_REG("\t\t\t",         TMC_AXIS_CODES);
+    TMC_GET_REG("\t",             TMC_AXIS_CODES);
     TMC_GET_REG("GCONF\t\t",      TMC_GET_GCONF);
     TMC_GET_REG("IHOLD_IRUN\t",   TMC_GET_IHOLD_IRUN);
     TMC_GET_REG("GSTAT\t\t",      TMC_GET_GSTAT);
@@ -773,9 +773,9 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
 #endif // HAVE_TMC2130
 
 template<typename TMC>
-static void test_connection(TMC &st, const char name[]) {
+static void test_connection(TMC &st, const TMC_AxisEnum axis) {
   SERIAL_ECHOPGM("Testing ");
-  SERIAL_ECHO(name);
+  _tmc_say_axis(axis);
   SERIAL_ECHOPGM(" connection...");
   switch(st.test_connection()) {
     case 0: SERIAL_ECHOPGM("OK"); break;
@@ -787,37 +787,37 @@ static void test_connection(TMC &st, const char name[]) {
 
 void test_tmc_connection() {
   #if ENABLED(X_IS_TMC2130)
-    test_connection(stepperX, extended_axis_codes[TMC_X]);
+    test_connection(stepperX, TMC_X);
   #endif
   #if ENABLED(Y_IS_TMC2130)
-    test_connection(stepperY, extended_axis_codes[TMC_Y]);
+    test_connection(stepperY, TMC_Y);
   #endif
   #if ENABLED(Z_IS_TMC2130)
-    test_connection(stepperZ, extended_axis_codes[TMC_Z]);
+    test_connection(stepperZ, TMC_Z);
   #endif
   #if ENABLED(X2_IS_TMC2130)
-    test_connection(stepperX2, extended_axis_codes[TMC_X2]);
+    test_connection(stepperX2, TMC_X2);
   #endif
   #if ENABLED(Y2_IS_TMC2130)
-    test_connection(stepperY2, extended_axis_codes[TMC_Y2]);
+    test_connection(stepperY2, TMC_Y2);
   #endif
   #if ENABLED(Z2_IS_TMC2130)
-    test_connection(stepperZ2, extended_axis_codes[TMC_Z2]);
+    test_connection(stepperZ2, TMC_Z2);
   #endif
   #if ENABLED(E0_IS_TMC2130)
-    test_connection(stepperE0, extended_axis_codes[TMC_E0]);
+    test_connection(stepperE0, TMC_E0);
   #endif
   #if ENABLED(E1_IS_TMC2130)
-    test_connection(stepperE1, extended_axis_codes[TMC_E1]);
+    test_connection(stepperE1, TMC_E1);
   #endif
   #if ENABLED(E2_IS_TMC2130)
-    test_connection(stepperE2, extended_axis_codes[TMC_E2]);
+    test_connection(stepperE2, TMC_E2);
   #endif
   #if ENABLED(E3_IS_TMC2130)
-    test_connection(stepperE3, extended_axis_codes[TMC_E3]);
+    test_connection(stepperE3, TMC_E3);
   #endif
   #if ENABLED(E4_IS_TMC2130)
-    test_connection(stepperE4, extended_axis_codes[TMC_E4]);
+    test_connection(stepperE4, TMC_E4);
   #endif
 }
 
