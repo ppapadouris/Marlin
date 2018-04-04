@@ -303,7 +303,7 @@ bool unload_filament(const float &unload_length, const bool show_lcd/*=false*/,
   #endif
 
   // Disable extruders steppers for manual filament changing (only on boards that have separate ENABLE_PINS)
-  #if E0_ENABLE_PIN != X_ENABLE_PIN && E1_ENABLE_PIN != Y_ENABLE_PIN
+  #if (E0_ENABLE_PIN != X_ENABLE_PIN && E1_ENABLE_PIN != Y_ENABLE_PIN) || ENABLED(E0_IS_TMC2660) || ENABLED(E1_IS_TMC2660)
     disable_e_stepper(active_extruder);
     safe_delay(100);
   #endif
