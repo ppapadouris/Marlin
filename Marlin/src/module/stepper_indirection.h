@@ -99,7 +99,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(X_IS_TMC2660)
     extern TMC2660Stepper stepperX;
     #define X_ENABLE_INIT NOOP
-    #define X_ENABLE_WRITE(STATE) stepperX.toff(STATE==X_ENABLE_ON ? stepperX.savedToff() : 0)
+    #define X_ENABLE_WRITE(STATE) stepperX.toff((STATE)==X_ENABLE_ON ? stepperX.savedToff() : 0)
     #define X_ENABLE_READ stepperX.isEnabled()
   #else
     #if ENABLED(X_IS_TMC2130)
@@ -137,7 +137,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(Y_IS_TMC2660)
     extern TMC2660Stepper stepperY;
     #define Y_ENABLE_INIT NOOP
-    #define Y_ENABLE_WRITE(STATE) stepperY.toff(STATE ? stepperY.savedToff() : 0)
+    #define Y_ENABLE_WRITE(STATE) stepperY.toff((STATE)==Y_ENABLE_ON ? stepperY.savedToff() : 0)
     #define Y_ENABLE_READ stepperY.isEnabled()
   #else
     #if ENABLED(Y_IS_TMC2130)
@@ -175,7 +175,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(Z_IS_TMC2660)
     extern TMC2660Stepper stepperZ;
     #define Z_ENABLE_INIT NOOP
-    #define Z_ENABLE_WRITE(STATE) stepperZ.toff(STATE ? stepperZ.savedToff() : 0)
+    #define Z_ENABLE_WRITE(STATE) stepperZ.toff((STATE)==Z_ENABLE_ON ? stepperZ.savedToff() : 0)
     #define Z_ENABLE_READ stepperZ.isEnabled()
   #else
     #if ENABLED(Z_IS_TMC2130)
@@ -214,7 +214,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #elif ENABLED(X2_IS_TMC2660)
       extern TMC2660Stepper stepperX2;
       #define X2_ENABLE_INIT NOOP
-      #define X2_ENABLE_WRITE(STATE) stepperX2.toff(STATE ? stepperX2.savedToff() : 0)
+      #define X2_ENABLE_WRITE(STATE) stepperX2.toff((STATE)==X_ENABLE_ON ? stepperX2.savedToff() : 0)
       #define X2_ENABLE_READ stepperX2.isEnabled()
     #else
       #if ENABLED(X2_IS_TMC2130)
@@ -254,7 +254,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #elif ENABLED(Y2_IS_TMC2660)
       extern TMC2660Stepper stepperY2;
       #define Y2_ENABLE_INIT NOOP
-      #define Y2_ENABLE_WRITE(STATE) stepperY2.toff(STATE ? stepperY2.savedToff() : 0)
+      #define Y2_ENABLE_WRITE(STATE) stepperY2.toff((STATE)==Y_ENABLE_ON ? stepperY2.savedToff() : 0)
       #define Y2_ENABLE_READ stepperY2.isEnabled()
     #else
       #if ENABLED(Y2_IS_TMC2130)
@@ -294,7 +294,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #elif ENABLED(Z2_IS_TMC2660)
       extern TMC2660Stepper stepperZ2;
       #define Z2_ENABLE_INIT NOOP
-      #define Z2_ENABLE_WRITE(STATE) stepperZ2.toff(STATE ? stepperZ2.savedToff() : 0)
+      #define Z2_ENABLE_WRITE(STATE) stepperZ2.toff((STATE)==Z_ENABLE_ON ? stepperZ2.savedToff() : 0)
       #define Z2_ENABLE_READ stepperZ2.isEnabled()
     #else
       #if ENABLED(Z2_IS_TMC2130)
@@ -333,7 +333,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(E0_IS_TMC2660)
     extern TMC2660Stepper stepperE0;
     #define E0_ENABLE_INIT NOOP
-    #define E0_ENABLE_WRITE(STATE) stepperE0.toff(STATE ? stepperE0.savedToff() : 0)
+    #define E0_ENABLE_WRITE(STATE) stepperE0.toff((STATE)==E_ENABLE_ON ? stepperE0.savedToff() : 0)
     #define E0_ENABLE_READ stepperE0.isEnabled()
   #else
     #if ENABLED(E0_IS_TMC2130)
@@ -371,7 +371,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(E1_IS_TMC2660)
     extern TMC2660Stepper stepperE1;
     #define E1_ENABLE_INIT NOOP
-    #define E1_ENABLE_WRITE(STATE) stepperE1.toff(STATE ? stepperE1.savedToff() : 0)
+    #define E1_ENABLE_WRITE(STATE) stepperE1.toff((STATE)==E_ENABLE_ON ? stepperE1.savedToff() : 0)
     #define E1_ENABLE_READ stepperE1.isEnabled()
   #else
     #if ENABLED(E1_IS_TMC2130)
@@ -409,7 +409,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(E2_IS_TMC2660)
     extern TMC2660Stepper stepperE2;
     #define E2_ENABLE_INIT NOOP
-    #define E2_ENABLE_WRITE(STATE) stepperE2.toff(STATE ? stepperE2.savedToff() : 0)
+    #define E2_ENABLE_WRITE(STATE) stepperE2.toff((STATE)==E_ENABLE_ON ? stepperE2.savedToff() : 0)
     #define E2_ENABLE_READ stepperE2.isEnabled()
   #else
     #if ENABLED(E2_IS_TMC2130)
@@ -447,7 +447,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(E3_IS_TMC2660)
     extern TMC2660Stepper stepperE3;
     #define E3_ENABLE_INIT NOOP
-    #define E3_ENABLE_WRITE(STATE) stepperE3.toff(STATE ? stepperE3.savedToff() : 0)
+    #define E3_ENABLE_WRITE(STATE) stepperE3.toff((STATE)==E_ENABLE_ON ? stepperE3.savedToff() : 0)
     #define E3_ENABLE_READ stepperE3.isEnabled()
   #else
     #if ENABLED(E3_IS_TMC2130)
@@ -485,7 +485,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(E4_IS_TMC2660)
     extern TMC2660Stepper stepperE4;
     #define E4_ENABLE_INIT NOOP
-    #define E4_ENABLE_WRITE(STATE) stepperE4.toff(STATE ? stepperE4.savedToff() : 0)
+    #define E4_ENABLE_WRITE(STATE) stepperE4.toff((STATE)==E_ENABLE_ON ? stepperE4.savedToff() : 0)
     #define E4_ENABLE_READ stepperE4.isEnabled()
   #else
     #if ENABLED(E4_IS_TMC2130)
