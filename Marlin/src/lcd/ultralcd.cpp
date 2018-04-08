@@ -133,8 +133,11 @@ uint16_t max_display_update_time = 0;
       DRAWMENU_SETTING_EDIT_GENERIC(_strFunc(pget())); \
     } \
     typedef void _name##_void
+  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(int8_t, int8, i8tostr3);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(int16_t, int3, itostr3);
-  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint8_t, int8, i8tostr3);
+  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint8_t, uint8, ui8tostr3);
+  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint16_t, uint16, uitostr3);
+  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint16_t, uint16_01, uitostr4);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(float, float3, ftostr3);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(float, float52, ftostr52);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(float, float43, ftostr43sign);
@@ -261,8 +264,11 @@ uint16_t max_display_update_time = 0;
     void menu_action_setting_edit_callback_ ## _name(const char * const pstr, _type * const ptr, const _type minValue, const _type maxValue, const screenFunc_t callback, const bool live=false); \
     typedef void _name##_void
 
+  DECLARE_MENU_EDIT_TYPE(int8_t, int8);
   DECLARE_MENU_EDIT_TYPE(int16_t, int3);
-  DECLARE_MENU_EDIT_TYPE(uint8_t, int8);
+  DECLARE_MENU_EDIT_TYPE(uint8_t, uint8);
+  DECLARE_MENU_EDIT_TYPE(uint16_t, uint16);
+  DECLARE_MENU_EDIT_TYPE(uint16_t, uint16_01);
   DECLARE_MENU_EDIT_TYPE(float, float3);
   DECLARE_MENU_EDIT_TYPE(float, float52);
   DECLARE_MENU_EDIT_TYPE(float, float43);
@@ -949,7 +955,7 @@ void lcd_quick_feedback(const bool clear_buttons) {
       // ^ Main
       //
       MENU_BACK(MSG_MAIN);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_CASE_LIGHT_BRIGHTNESS, &case_light_brightness, 0, 255, update_case_light, true);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_CASE_LIGHT_BRIGHTNESS, &case_light_brightness, 0, 255, update_case_light, true);
       MENU_ITEM_EDIT_CALLBACK(bool, MSG_CASE_LIGHT, (bool*)&case_light_on, update_case_light);
       END_MENU();
     }
@@ -1533,10 +1539,10 @@ void lcd_quick_feedback(const bool clear_buttons) {
       dac_driver_getValues();
       START_MENU();
       MENU_BACK(MSG_CONTROL);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_X " " MSG_DAC_PERCENT, &driverPercent[X_AXIS], 0, 100, dac_driver_commit);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_Y " " MSG_DAC_PERCENT, &driverPercent[Y_AXIS], 0, 100, dac_driver_commit);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_Z " " MSG_DAC_PERCENT, &driverPercent[Z_AXIS], 0, 100, dac_driver_commit);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_E " " MSG_DAC_PERCENT, &driverPercent[E_AXIS], 0, 100, dac_driver_commit);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_X " " MSG_DAC_PERCENT, &driverPercent[X_AXIS], 0, 100, dac_driver_commit);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_Y " " MSG_DAC_PERCENT, &driverPercent[Y_AXIS], 0, 100, dac_driver_commit);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_Z " " MSG_DAC_PERCENT, &driverPercent[Z_AXIS], 0, 100, dac_driver_commit);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_E " " MSG_DAC_PERCENT, &driverPercent[E_AXIS], 0, 100, dac_driver_commit);
       MENU_ITEM(function, MSG_DAC_EEPROM_WRITE, dac_driver_eeprom_write);
       END_MENU();
     }
@@ -4240,13 +4246,13 @@ void lcd_quick_feedback(const bool clear_buttons) {
     void lcd_led_custom_menu() {
       START_MENU();
       MENU_BACK(MSG_LED_CONTROL);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_INTENSITY_R, &leds.color.r, 0, 255, leds.update, true);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_INTENSITY_G, &leds.color.g, 0, 255, leds.update, true);
-      MENU_ITEM_EDIT_CALLBACK(int8, MSG_INTENSITY_B, &leds.color.b, 0, 255, leds.update, true);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_INTENSITY_R, &leds.color.r, 0, 255, leds.update, true);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_INTENSITY_G, &leds.color.g, 0, 255, leds.update, true);
+      MENU_ITEM_EDIT_CALLBACK(uint8, MSG_INTENSITY_B, &leds.color.b, 0, 255, leds.update, true);
       #if ENABLED(RGBW_LED) || ENABLED(NEOPIXEL_LED)
-        MENU_ITEM_EDIT_CALLBACK(int8, MSG_INTENSITY_W, &leds.color.w, 0, 255, leds.update, true);
+        MENU_ITEM_EDIT_CALLBACK(uint8, MSG_INTENSITY_W, &leds.color.w, 0, 255, leds.update, true);
         #if ENABLED(NEOPIXEL_LED)
-          MENU_ITEM_EDIT_CALLBACK(int8, MSG_LED_BRIGHTNESS, &leds.color.i, 0, 255, leds.update, true);
+          MENU_ITEM_EDIT_CALLBACK(uint8, MSG_LED_BRIGHTNESS, &leds.color.i, 0, 255, leds.update, true);
         #endif
       #endif
       END_MENU();
@@ -4845,8 +4851,12 @@ void lcd_quick_feedback(const bool clear_buttons) {
     } \
     typedef void _name##_void
 
+  DEFINE_MENU_EDIT_TYPE(uint32_t, long5, ftostr5rj, 0.01);
+  DEFINE_MENU_EDIT_TYPE(uint16_t, uint16_01, uitostr4, 0.1);
   DEFINE_MENU_EDIT_TYPE(int16_t, int3, itostr3, 1);
-  DEFINE_MENU_EDIT_TYPE(uint8_t, int8, i8tostr3, 1);
+  DEFINE_MENU_EDIT_TYPE(int8_t, int8, i8tostr3, 1);
+  DEFINE_MENU_EDIT_TYPE(uint16_t, uint16, uitostr3, 1);
+  DEFINE_MENU_EDIT_TYPE(uint8_t, uint8, ui8tostr3, 1);
   DEFINE_MENU_EDIT_TYPE(float, float3, ftostr3, 1.0);
   DEFINE_MENU_EDIT_TYPE(float, float52, ftostr52, 100.0);
   DEFINE_MENU_EDIT_TYPE(float, float43, ftostr43sign, 1000.0);
