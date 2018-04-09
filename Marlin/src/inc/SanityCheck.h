@@ -1607,6 +1607,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(X_IS_TMC26X) \
   + ENABLED(X_IS_TMC2130) \
   + ENABLED(X_IS_TMC2208) \
+  + ENABLED(X_IS_TMC2660) \
   + ENABLED(X_IS_L6470)
   #error "Please enable only one stepper driver for the X axis."
 #endif
@@ -1614,6 +1615,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(X2_IS_TMC26X) \
   + ENABLED(X2_IS_TMC2130) \
   + ENABLED(X2_IS_TMC2208) \
+  + ENABLED(X2_IS_TMC2660) \
   + ENABLED(X2_IS_L6470)
   #error "Please enable only one stepper driver for the X2 axis."
 #endif
@@ -1621,6 +1623,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(Y_IS_TMC26X) \
   + ENABLED(Y_IS_TMC2130) \
   + ENABLED(Y_IS_TMC2208) \
+  + ENABLED(Y_IS_TMC2660) \
   + ENABLED(Y_IS_L6470)
   #error "Please enable only one stepper driver for the Y axis."
 #endif
@@ -1628,6 +1631,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(Y2_IS_TMC26X) \
   + ENABLED(Y2_IS_TMC2130) \
   + ENABLED(Y2_IS_TMC2208) \
+  + ENABLED(Y2_IS_TMC2660) \
   + ENABLED(Y2_IS_L6470)
   #error "Please enable only one stepper driver for the Y2 axis."
 #endif
@@ -1635,6 +1639,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(Z_IS_TMC26X) \
   + ENABLED(Z_IS_TMC2130) \
   + ENABLED(Z_IS_TMC2208) \
+  + ENABLED(Z_IS_TMC2660) \
   + ENABLED(Z_IS_L6470)
   #error "Please enable only one stepper driver for the Z axis."
 #endif
@@ -1642,6 +1647,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(Z2_IS_TMC26X) \
   + ENABLED(Z2_IS_TMC2130) \
   + ENABLED(Z2_IS_TMC2208) \
+  + ENABLED(Z2_IS_TMC2660) \
   + ENABLED(Z2_IS_L6470)
   #error "Please enable only one stepper driver for the Z2 axis."
 #endif
@@ -1649,6 +1655,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(E0_IS_TMC26X) \
   + ENABLED(E0_IS_TMC2130) \
   + ENABLED(E0_IS_TMC2208) \
+  + ENABLED(E0_IS_TMC2660) \
   + ENABLED(E0_IS_L6470)
   #error "Please enable only one stepper driver for the E0 axis."
 #endif
@@ -1656,6 +1663,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(E1_IS_TMC26X) \
   + ENABLED(E1_IS_TMC2130) \
   + ENABLED(E1_IS_TMC2208) \
+  + ENABLED(E1_IS_TMC2660) \
   + ENABLED(E1_IS_L6470)
   #error "Please enable only one stepper driver for the E1 axis."
 #endif
@@ -1663,6 +1671,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(E2_IS_TMC26X) \
   + ENABLED(E2_IS_TMC2130) \
   + ENABLED(E2_IS_TMC2208) \
+  + ENABLED(E2_IS_TMC2660) \
   + ENABLED(E2_IS_L6470)
   #error "Please enable only one stepper driver for the E2 axis."
 #endif
@@ -1670,6 +1679,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(E3_IS_TMC26X) \
   + ENABLED(E3_IS_TMC2130) \
   + ENABLED(E3_IS_TMC2208) \
+  + ENABLED(E3_IS_TMC2660) \
   + ENABLED(E3_IS_L6470)
   #error "Please enable only one stepper driver for the E3 axis."
 #endif
@@ -1677,6 +1687,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   + ENABLED(E4_IS_TMC26X) \
   + ENABLED(E4_IS_TMC2130) \
   + ENABLED(E4_IS_TMC2208) \
+  + ENABLED(E4_IS_TMC2660) \
   + ENABLED(E4_IS_L6470)
   #error "Please enable only one stepper driver for the E4 axis."
 #endif

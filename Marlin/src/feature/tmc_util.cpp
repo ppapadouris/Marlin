@@ -677,6 +677,6 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       SET_CS_PIN(E4);
     #endif
   }
-#endif // HAVE_TMC2130
+#endif // HAVE_TMC2130 HAVE_TMC2660
 
 #endif // HAS_TRINAMIC
