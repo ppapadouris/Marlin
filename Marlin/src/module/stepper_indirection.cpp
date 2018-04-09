@@ -546,9 +546,6 @@
     st.intpol(INTERPOLATE);
     //st.hysteresis_start(3);
     //st.hysteresis_end(2);
-    #if ENABLED(SENSORLESS_HOMING)
-      st.coolstep_min_speed(1024UL * 1024UL - 1UL);
-    #endif
   }
 
   #define _TMC2660_INIT(ST) tmc2660_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS)
