@@ -353,10 +353,10 @@ void GcodeSuite::M912() {
     do_blocking_move_to_z(Z_MAX_POS+_z);
 
     #if Z_IS_TRINAMIC
-      stepperZ.rms_current(Z_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ.rms_current(Z_current_1);
     #endif
     #if Z2_IS_TRINAMIC
-      stepperZ2.rms_current(Z2_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ2.rms_current(Z2_current_1);
     #endif
 
     do_blocking_move_to_z(Z_MAX_POS);
