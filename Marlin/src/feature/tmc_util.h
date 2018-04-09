@@ -24,7 +24,7 @@
 #define _TMC_UTIL_H_
 
 #include "../inc/MarlinConfigPre.h"
-#if HAVE_TRINAMIC
+#if HAS_TRINAMIC
   #include <TMCStepper.h>
 #endif
 
