@@ -194,7 +194,7 @@ void GcodeSuite::M912() {
     bool report = true;
     const uint8_t index = parser.byteval('I');
     LOOP_XYZ(i) if (parser.seen(axis_codes[i])) {
-      const int8_t value = (int8_t)constrain(parser.value_int(), -63, 64);
+      const int8_t value = (int8_t)constrain(parser.value_int(), -64, 63);
       report = false;
       switch (i) {
         case X_AXIS:
@@ -282,10 +282,10 @@ void GcodeSuite::M912() {
     do_blocking_move_to_z(Z_MAX_POS+_z);
 
     #if Z_IS_TRINAMIC
-      stepperZ.rms_current(Z_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ.rms_current(Z_current_1);
     #endif
     #if Z2_IS_TRINAMIC
-      stepperZ2.rms_current(Z2_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ2.rms_current(Z2_current_1);
     #endif
 
     do_blocking_move_to_z(Z_MAX_POS);

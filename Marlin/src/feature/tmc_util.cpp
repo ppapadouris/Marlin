@@ -147,7 +147,7 @@ bool report_tmc_status = false;
     #if CURRENT_STEP_DOWN > 0
       // Decrease current if is_otpw is true and driver is enabled and there's been more than 4 warnings
       if (data.is_otpw && st.isEnabled() && otpw_cnt > 4) {
-        st.rms_current(st.getMilliAmps() - CURRENT_STEP_DOWN, R_SENSE, HOLD_MULTIPLIER);
+        st.rms_current(st.getMilliAmps() - CURRENT_STEP_DOWN);
         #if ENABLED(REPORT_CURRENT_CHANGE)
           _tmc_say_axis(axis);
           SERIAL_ECHOLNPAIR(" current decreased to ", st.getMilliAmps());
@@ -332,9 +332,8 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     static void tmc_status(TMC2130Stepper &st, const TMC_debug_enum i) {
       switch (i) {
         case TMC_PWM_SCALE: SERIAL_PRINT(st.PWM_SCALE(), DEC); break;
-        case TMC_TSTEP: SERIAL_ECHO(st.TSTEP()); break;
         case TMC_SGT: SERIAL_PRINT(st.sgt(), DEC); break;
-        case TMC_STEALTHCHOP: serialprintPGM(st.stealthChop() ? PSTR("true") : PSTR("false")); break;
+        case TMC_STEALTHCHOP: serialprintPGM(st.en_pwm_mode() ? PSTR("true") : PSTR("false")); break;
         default: break;
       }
     }
@@ -352,7 +351,6 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   #if ENABLED(HAVE_TMC2208)
     static void tmc_status(TMC2208Stepper &st, const TMC_debug_enum i) {
       switch (i) {
-        case TMC_TSTEP: { uint32_t data = 0; st.TSTEP(&data); SERIAL_PROTOCOL(data); break; }
         case TMC_PWM_SCALE: SERIAL_PRINT(st.pwm_scale_sum(), DEC); break;
         case TMC_STEALTHCHOP: serialprintPGM(st.stealth() ? PSTR("true") : PSTR("false")); break;
         case TMC_S2VSA: if (st.s2vsa()) SERIAL_CHAR('X'); break;
@@ -401,6 +399,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       case TMC_VSENSE: serialprintPGM(st.vsense() ? PSTR("1=.18") : PSTR("0=.325")); break;
 
       case TMC_MICROSTEPS: SERIAL_ECHO(st.microsteps()); break;
+      case TMC_TSTEP: SERIAL_ECHO(st.TSTEP()); break;
       case TMC_TPWMTHRS: {
           uint32_t tpwmthrs_val = st.TPWMTHRS();
           SERIAL_ECHO(tpwmthrs_val);
@@ -629,8 +628,8 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
 
   void tmc_sensorless_homing(TMC2130Stepper &st, bool enable/*=true*/) {
     #if ENABLED(STEALTHCHOP)
-      st.coolstep_min_speed(enable ? 1024UL * 1024UL - 1UL : 0);
-      st.stealthChop(!enable);
+      st.TCOOLTHRS(enable ? 0xFFFFF : 0);
+      st.en_pwm_mode(!enable);
     #endif
     st.diag1_stall(enable ? 1 : 0);
   }
