@@ -22,7 +22,7 @@
 
 #ifdef TARGET_LPC1768
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 #include "HardwareSerial.h"
 
 #if SERIAL_PORT == 0 || SERIAL_PORT_2 == 0
