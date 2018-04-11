@@ -74,6 +74,10 @@
   #include "../libs/buzzer.h"
 #endif
 
+#if HAS_TRINAMIC
+  #include "../feature/tmc_util.h"
+#endif
+
 #if ENABLED(STATUS_MESSAGE_SCROLLING)
   #if LONG_FILENAME_LENGTH > CHARSIZE * 2 * (LCD_WIDTH)
     #define MAX_MESSAGE_LENGTH LONG_FILENAME_LENGTH
@@ -1567,6 +1571,204 @@ void lcd_quick_feedback(const bool clear_buttons) {
     }
 
   #endif // HAS_MOTOR_CURRENT_PWM
+
+  #if HAS_TRINAMIC
+    #define TMC_EDIT_STORED_I_RMS(ST) MENU_ITEM_EDIT_CALLBACK(uint16_01, MSG_##ST, &stepper##ST.stored.I_rms, 100, 1200, refresh_tmc_driver_current)
+    void lcd_tmc_current_menu() {
+      START_MENU();
+      MENU_BACK(MSG_TMC_DRIVERS);
+      #if X_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(X);
+      #endif
+      #if Y_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(Y);
+      #endif
+      #if Z_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(Z);
+      #endif
+      #if X2_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(X2);
+      #endif
+      #if Y2_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(Y2);
+      #endif
+      #if Z2_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(Z2);
+      #endif
+      #if E0_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(E0);
+      #endif
+      #if E1_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(E1);
+      #endif
+      #if E2_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(E2);
+      #endif
+      #if E3_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(E3);
+      #endif
+      #if E4_IS_TRINAMIC
+        TMC_EDIT_STORED_I_RMS(E4);
+      #endif
+      END_MENU();
+    }
+    #if ENABLED(HYBRID_THRESHOLD)
+      #define TMC_EDIT_STORED_HYBRID_THRS(ST) MENU_ITEM_EDIT_CALLBACK(uint8, MSG_##ST, &stepper##ST.stored.hybrid_thrs, 0, 255, refresh_tmc_hybrid_thrs);
+      void lcd_tmc_hybrid_thrs() {
+        START_MENU();
+        MENU_BACK(MSG_TMC_DRIVERS);
+        #if X_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(X);
+        #endif
+        #if Y_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(Y);
+        #endif
+        #if Z_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(Z);
+        #endif
+        #if X2_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(X2);
+        #endif
+        #if Y2_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(Y2);
+        #endif
+        #if Z2_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(Z2);
+        #endif
+        #if E0_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(E0);
+        #endif
+        #if E1_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(E1);
+        #endif
+        #if E2_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(E2);
+        #endif
+        #if E3_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(E3);
+        #endif
+        #if E4_IS_TRINAMIC
+          TMC_EDIT_STORED_HYBRID_THRS(E4);
+        #endif
+        END_MENU();
+      }
+    #endif
+    #if ENABLED(SENSORLESS_HOMING)
+      #define TMC_EDIT_STORED_SGT(ST) MENU_ITEM_EDIT_CALLBACK(int8, MSG_##ST, &stepper##ST.stored.homing_thrs, -64, 63, refresh_tmc_homing_thrs);
+      void lcd_tmc_homing_thrs() {
+        START_MENU();
+        MENU_BACK(MSG_TMC_DRIVERS);
+        #if X_IS_TRINAMIC
+          TMC_EDIT_STORED_SGT(X);
+        #endif
+        #if Y_IS_TRINAMIC
+          TMC_EDIT_STORED_SGT(Y);
+        #endif
+        END_MENU();
+      }
+    #endif
+    #define TMC_SHOW_SG_RESULT(ST) STATIC_ITEM(MSG_##ST ": ", false, false, uitostr3(stepper##ST.stored.sg_result))
+    void lcd_tmc_sg_result() {
+      START_MENU();
+      MENU_BACK(MSG_TMC_STATUS);
+      #if X_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(X);
+      #endif
+      #if Y_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(Y);
+      #endif
+      #if Z_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(Z);
+      #endif
+      #if X2_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(X2);
+      #endif
+      #if Y2_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(Y2);
+      #endif
+      #if Z2_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(Z2);
+      #endif
+      #if E0_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(E0);
+      #endif
+      #if E1_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(E1);
+      #endif
+      #if E2_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(E2);
+      #endif
+      #if E3_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(E3);
+      #endif
+      #if E4_IS_TRINAMIC
+        TMC_SHOW_SG_RESULT(E4);
+      #endif
+      END_MENU();
+    }
+    #define TMC_SHOW_CS_ACTUAL(ST) STATIC_ITEM(MSG_##ST ": ", false, false, ui8tostr3(stepper##ST.stored.cs_actual))
+    void lcd_tmc_cs_actual() {
+      START_MENU();
+      MENU_BACK(MSG_TMC_STATUS);
+      #if X_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(X);
+      #endif
+      #if Y_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(Y);
+      #endif
+      #if Z_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(Z);
+      #endif
+      #if X2_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(X2);
+      #endif
+      #if Y2_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(Y2);
+      #endif
+      #if Z2_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(Z2);
+      #endif
+      #if E0_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(E0);
+      #endif
+      #if E1_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(E1);
+      #endif
+      #if E2_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(E2);
+      #endif
+      #if E3_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(E3);
+      #endif
+      #if E4_IS_TRINAMIC
+        TMC_SHOW_CS_ACTUAL(E4);
+      #endif
+      END_MENU();
+    }
+    void lcd_tmc_info_menu() {
+      START_MENU();
+      MENU_BACK(MSG_TMC_DRIVERS);
+      MENU_ITEM(submenu, MSG_TMC_LOAD, lcd_tmc_sg_result);
+      MENU_ITEM(submenu, MSG_TMC_CS_ACTUAL, lcd_tmc_cs_actual);
+      END_MENU();
+    }
+    void lcd_tmc_menu() {
+      START_MENU();
+      MENU_BACK(MSG_CONTROL);
+      MENU_ITEM(submenu, MSG_TMC_CURRENT, lcd_tmc_current_menu);
+      #if ENABLED(HYBRID_THRESHOLD)
+        MENU_ITEM(submenu, MSG_TMC_HYBRID_THRS, lcd_tmc_hybrid_thrs);
+      #endif
+      #if ENABLED(SENSORLESS_HOMING)
+        MENU_ITEM(submenu, MSG_TMC_HOMING_THRS, lcd_tmc_homing_thrs);
+      #endif
+      #if ENABLED(STEALTHCHOP)
+        MENU_ITEM_EDIT_CALLBACK(bool, MSG_TMC_USE_STEALTHCHOP, &stepperX.stored.stealthChop_enabled, set_tmc_stepping_mode);
+      #endif
+      MENU_ITEM(submenu, MSG_TMC_STATUS, lcd_tmc_info_menu);
+      END_MENU();
+    }
+  #endif
 
   constexpr int16_t heater_maxtemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MAXTEMP, HEATER_1_MAXTEMP, HEATER_2_MAXTEMP, HEATER_3_MAXTEMP, HEATER_4_MAXTEMP);
 
@@ -3355,6 +3557,9 @@ void lcd_quick_feedback(const bool clear_buttons) {
     #if HAS_MOTOR_CURRENT_PWM
       MENU_ITEM(submenu, MSG_DRIVE_STRENGTH, lcd_pwm_menu);
     #endif
+    #if HAS_TRINAMIC
+      MENU_ITEM(submenu, MSG_TMC_DRIVERS, lcd_tmc_menu);
+    #endif
 
     #if ENABLED(BLTOUCH)
       MENU_ITEM(submenu, MSG_BLTOUCH, bltouch_menu);
@@ -5061,6 +5266,10 @@ void lcd_init() {
 
   #if ENABLED(ULTIPANEL)
     encoderDiff = 0;
+  #endif
+
+  #if HAS_TRINAMIC
+    init_tmc_section();
   #endif
 }
 
