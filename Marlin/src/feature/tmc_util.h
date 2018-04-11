@@ -89,6 +89,18 @@ void monitor_tmc_driver();
   void tmc_report_all();
 #endif
 
+#if ENABLED(ULTIPANEL)
+  void init_tmc_section();
+  void refresh_tmc_driver_current();
+  void set_tmc_stepping_mode();
+  #if ENABLED(HYBRID_THRESHOLD)
+    void refresh_tmc_hybrid_thrs();
+  #endif
+  #if ENABLED(SENSORLESS_HOMING)
+    void refresh_tmc_homing_thrs();
+  #endif
+#endif
+
 /**
  * TMC2130 specific sensorless homing using stallGuard2.
  * stallGuard2 only works when in spreadCycle mode.
