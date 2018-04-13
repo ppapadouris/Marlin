@@ -92,7 +92,7 @@ void safe_delay(millis_t ms) {
   }
 
   // Convert signed int to rj string with 123 or -12 format
-  char* itostr3(const int x) {
+  char* itostr3(const int16_t x) {
     int xx = x;
     conv[4] = MINUSOR(xx, RJDIGIT(xx, 100));
     conv[5] = RJDIGIT(xx, 10);
