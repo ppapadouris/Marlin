@@ -96,7 +96,7 @@ void safe_delay(millis_t ms);
   char* ftostr62rj(const float &x);
 
   // Convert float to rj string with 123 or -12 format
-  FORCE_INLINE char *ftostr3(const float &x) { return itostr3((int)x); }
+  FORCE_INLINE char *ftostr3(const float &x) { return itostr3((int16_t)x); }
 
   #if ENABLED(LCD_DECIMAL_SMALL_XY)
     // Convert float to rj string with 1234, _123, 12.3, _1.2, -123, _-12, or -1.2 format
