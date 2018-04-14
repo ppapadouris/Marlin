@@ -94,8 +94,8 @@ bool report_tmc_status = false;
     }
   #endif
   #if ENABLED(HAVE_TMC2660)
-    static uint32_t get_pwm_scale(TMC2660Stepper &st) { UNUSED(st); return 0; }
-    static uint8_t get_status_response(TMC2660Stepper &st) { UNUSED(st); return 0; }
+    static uint32_t get_pwm_scale(TMC2660Stepper) { return 0; }
+    static uint8_t get_status_response(TMC2660Stepper) { return 0; }
     static TMC_driver_data get_driver_data(TMC2660Stepper &st) {
       constexpr uint32_t OTPW_bm = 0x4UL;
       constexpr uint8_t OTPW_bp = 2;
@@ -371,7 +371,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   #endif
 
   #if ENABLED(HAVE_TMC2660)
-    static void tmc_parse_drv_status(TMC2660Stepper &st, const TMC_drv_status_enum i) { }
+    static void tmc_parse_drv_status(TMC2660Stepper, const TMC_drv_status_enum) { }
   #endif
 
   template <typename TMC>
@@ -421,8 +421,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   }
 
   template<>
-  void tmc_status(TMC2660Stepper &st, const TMC_AxisEnum axis, const TMC_debug_enum i, const float spmm) {
-    UNUSED(spmm);
+  void tmc_status(TMC2660Stepper &st, const TMC_AxisEnum axis, const TMC_debug_enum i, const float) {
     SERIAL_ECHO('\t');
     switch (i) {
       case TMC_CODES: _tmc_say_axis(axis); break;
