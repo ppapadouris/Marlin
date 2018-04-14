@@ -453,11 +453,10 @@
 
   // Use internal reference voltage for current calculations. This is the default.
   // Following values from Trinamic's spreadsheet with values for a NEMA17 (42BYGHW609)
-  void tmc2208_init(TMC2208Stepper &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
+  void tmc2208_init(TMC2208Stepper &st, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
     st.pdn_disable(true); // Use UART
     st.mstep_reg_select(true); // Select microsteps with UART
     st.I_scale_analog(false);
-    st.rms_current(mA, HOLD_MULTIPLIER, R_SENSE);
     st.microsteps(microsteps);
     st.blank_time(24);
     st.toff(5);
@@ -487,7 +486,7 @@
     delay(200);
   }
 
-  #define _TMC2208_INIT(ST, SPMM) tmc2208_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, SPMM)
+  #define _TMC2208_INIT(ST, SPMM) tmc2208_init(stepper##ST, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, SPMM)
 
   void tmc2208_init_to_defaults() {
     #if ENABLED(X_IS_TMC2208)
