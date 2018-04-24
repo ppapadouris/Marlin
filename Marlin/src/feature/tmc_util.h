@@ -37,7 +37,7 @@ extern bool report_tmc_status;
 
 enum TMC_AxisEnum : char { TMC_X, TMC_Y, TMC_Z, TMC_X2, TMC_Y2, TMC_Z2, TMC_E0, TMC_E1, TMC_E2, TMC_E3, TMC_E4 };
 
-constexpr uint32_t _tmc_thrs(const uint16_t msteps, const int32_t thrs, const uint32_t spmm) {
+constexpr uint16_t _tmc_thrs(const uint16_t msteps, const int32_t thrs, const uint32_t spmm) {
   return 12650000UL * msteps / (256 * thrs * spmm);
 }
 
@@ -53,7 +53,7 @@ void tmc_get_current(TMC &st, const TMC_AxisEnum axis) {
   _tmc_say_current(axis, st.getCurrent());
 }
 template<typename TMC>
-void tmc_set_current(TMC &st, const TMC_AxisEnum axis, const int mA) {
+void tmc_set_current(TMC &st, const int mA) {
   st.setCurrent(mA, R_SENSE, HOLD_MULTIPLIER);
 }
 template<typename TMC>
@@ -70,7 +70,7 @@ void tmc_get_pwmthrs(TMC &st, const TMC_AxisEnum axis, const uint16_t spmm) {
   _tmc_say_pwmthrs(axis, _tmc_thrs(st.microsteps(), st.TPWMTHRS(), spmm));
 }
 template<typename TMC>
-void tmc_set_pwmthrs(TMC &st, const TMC_AxisEnum axis, const int32_t thrs, const uint32_t spmm) {
+void tmc_set_pwmthrs(TMC &st, const int32_t thrs, const uint32_t spmm) {
   st.TPWMTHRS(_tmc_thrs(st.microsteps(), thrs, spmm));
 }
 template<typename TMC>
@@ -78,7 +78,7 @@ void tmc_get_sgt(TMC &st, const TMC_AxisEnum axis) {
   _tmc_say_sgt(axis, st.sgt());
 }
 template<typename TMC>
-void tmc_set_sgt(TMC &st, const TMC_AxisEnum axis, const int8_t sgt_val) {
+void tmc_set_sgt(TMC &st, const int8_t sgt_val) {
   st.sgt(sgt_val);
 }
 
@@ -89,6 +89,18 @@ void test_tmc_connection();
   void tmc_set_report_status(const bool status);
   void tmc_report_all();
   void tmc_get_registers();
+#endif
+
+#if ENABLED(ULTIPANEL)
+  void init_tmc_section();
+  void refresh_tmc_driver_current();
+  void set_tmc_stepping_mode();
+  #if ENABLED(HYBRID_THRESHOLD)
+    void refresh_tmc_hybrid_thrs();
+  #endif
+  #if ENABLED(SENSORLESS_HOMING)
+    void refresh_tmc_homing_thrs();
+  #endif
 #endif
 
 /**

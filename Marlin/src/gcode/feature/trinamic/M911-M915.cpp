@@ -81,9 +81,9 @@ void GcodeSuite::M912() {
 #if ENABLED(HYBRID_THRESHOLD)
   void GcodeSuite::M913() {
     #define TMC_SAY_PWMTHRS(P,Q) tmc_get_pwmthrs(stepper##Q, TMC_##Q, planner.axis_steps_per_mm[P##_AXIS])
-    #define TMC_SET_PWMTHRS(P,Q) tmc_set_pwmthrs(stepper##Q, TMC_##Q, value, planner.axis_steps_per_mm[P##_AXIS])
+    #define TMC_SET_PWMTHRS(P,Q) tmc_set_pwmthrs(stepper##Q, value, planner.axis_steps_per_mm[P##_AXIS])
     #define TMC_SAY_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_get_pwmthrs(stepperE##E, TMC_E##E, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
-    #define TMC_SET_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_set_pwmthrs(stepperE##E, TMC_E##E, value, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
+    #define TMC_SET_PWMTHRS_E(E) do{ const uint8_t extruder = E; tmc_set_pwmthrs(stepperE##E, value, planner.axis_steps_per_mm[E_AXIS_N]); }while(0)
 
     bool report = true;
     const uint8_t index = parser.byteval('I');
@@ -189,7 +189,7 @@ void GcodeSuite::M912() {
 #if ENABLED(SENSORLESS_HOMING)
   void GcodeSuite::M914() {
     #define TMC_SAY_SGT(Q) tmc_get_sgt(stepper##Q, TMC_##Q)
-    #define TMC_SET_SGT(Q) tmc_set_sgt(stepper##Q, TMC_##Q, value)
+    #define TMC_SET_SGT(Q) tmc_set_sgt(stepper##Q, value)
 
     bool report = true;
     const uint8_t index = parser.byteval('I');

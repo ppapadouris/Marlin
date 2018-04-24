@@ -48,10 +48,19 @@ void safe_delay(millis_t ms);
 #if ENABLED(ULTRA_LCD) || ENABLED(DEBUG_LEVELING_FEATURE)
 
   // Convert uint8_t to string with 123 format
-  char* i8tostr3(const uint8_t x);
+  char* ui8tostr3(const uint8_t x);
 
-  // Convert signed int to rj string with 123 or -12 format
-  char* itostr3(const int x);
+  // Convert int8_t to string with 123 format
+  char* i8tostr3(const int8_t x);
+
+  // Convert uint16_t to string with 1234 format
+  char* uitostr3(const uint16_t x);
+
+  // Convert uint16_t to string with 1234 format
+  char* uitostr4(const uint16_t x);
+
+  // Convert int16_t to string with 123 format
+  char* itostr3(const int16_t x);
 
   // Convert unsigned int to lj string with 123 format
   char* itostr3left(const int xx);
@@ -87,7 +96,7 @@ void safe_delay(millis_t ms);
   char* ftostr62rj(const float &x);
 
   // Convert float to rj string with 123 or -12 format
-  FORCE_INLINE char *ftostr3(const float &x) { return itostr3((int)x); }
+  FORCE_INLINE char *ftostr3(const float &x) { return itostr3((int16_t)x); }
 
   #if ENABLED(LCD_DECIMAL_SMALL_XY)
     // Convert float to rj string with 1234, _123, 12.3, _1.2, -123, _-12, or -1.2 format
