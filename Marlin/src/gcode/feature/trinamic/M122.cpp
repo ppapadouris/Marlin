@@ -26,6 +26,7 @@
 
 #include "../../gcode.h"
 #include "../../../feature/tmc_util.h"
+#include "../../../module/stepper_indirection.h"
 
 /**
  * M122: Debug TMC drivers

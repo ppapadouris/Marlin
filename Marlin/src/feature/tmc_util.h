@@ -24,13 +24,8 @@
 #define _TMC_UTIL_H_
 
 #include "../inc/MarlinConfigPre.h"
-
-#if ENABLED(HAVE_TMC2130)
-  #include <TMC2130Stepper.h>
-#endif
-
-#if ENABLED(HAVE_TMC2208)
-  #include <TMC2208Stepper.h>
+#if HAS_TRINAMIC
+  #include <TMCStepper.h>
 #endif
 
 extern bool report_tmc_status;
@@ -50,7 +45,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt);
 
 template<typename TMC>
 void tmc_get_current(TMC &st, const TMC_AxisEnum axis) {
-  _tmc_say_current(axis, st.getCurrent());
+  _tmc_say_current(axis, st.getMilliAmps());
 }
 template<typename TMC>
 void tmc_set_current(TMC &st, const int mA) {
@@ -114,7 +109,7 @@ void test_tmc_connection();
   void tmc_sensorless_homing(TMC2130Stepper &st, bool enable=true);
 #endif
 
-#if ENABLED(HAVE_TMC2130)
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2660)
   void tmc_init_cs_pins();
 #endif
 

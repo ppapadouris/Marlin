@@ -698,7 +698,7 @@ void setup() {
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START();
 
-  #if ENABLED(HAVE_TMC2130)
+  #if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2660)
     tmc_init_cs_pins();
   #endif
   #if ENABLED(HAVE_TMC2208)

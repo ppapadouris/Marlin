@@ -1054,11 +1054,11 @@
  * in your `pins_MYBOARD.h` file. (e.g., RAMPS 1.4 uses AUX3 pins `X_CS_PIN 53`, `Y_CS_PIN 49`, etc.).
  * You may also use software SPI if you wish to use general purpose IO pins.
  */
-//#define HAVE_TMC2130
+#define HAVE_TMC2130
 #if ENABLED(HAVE_TMC2130)  // Choose your axes here. This is mandatory!
   //#define X_IS_TMC2130
   //#define X2_IS_TMC2130
-  //#define Y_IS_TMC2130
+  #define Y_IS_TMC2130
   //#define Y2_IS_TMC2130
   //#define Z_IS_TMC2130
   //#define Z2_IS_TMC2130
@@ -1079,13 +1079,13 @@
  * You'll also need the TMC2208Stepper Arduino library
  * (https://github.com/teemuatlut/TMC2208Stepper).
  */
-//#define HAVE_TMC2208
+#define HAVE_TMC2208
 #if ENABLED(HAVE_TMC2208)  // Choose your axes here. This is mandatory!
   //#define X_IS_TMC2208
   //#define X2_IS_TMC2208
   //#define Y_IS_TMC2208
   //#define Y2_IS_TMC2208
-  //#define Z_IS_TMC2208
+  #define Z_IS_TMC2208
   //#define Z2_IS_TMC2208
   //#define E0_IS_TMC2208
   //#define E1_IS_TMC2208
@@ -1094,19 +1094,34 @@
   //#define E4_IS_TMC2208
 #endif
 
-#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208)
+#define HAVE_TMC2660
+#if ENABLED(HAVE_TMC2660)  // Choose your axes here. This is mandatory!
+  #define X_IS_TMC2660
+  //#define X2_IS_TMC2660
+  //#define Y_IS_TMC2660
+  //#define Y2_IS_TMC2660
+  //#define Z_IS_TMC2660
+  //#define Z2_IS_TMC2660
+  //#define E0_IS_TMC2660
+  //#define E1_IS_TMC2660
+  //#define E2_IS_TMC2660
+  //#define E3_IS_TMC2660
+  //#define E4_IS_TMC2660
+#endif
 
-  #define R_SENSE           0.11  // R_sense resistor for SilentStepStick2130
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC2660)
+
+  #define R_SENSE           0.10  // R_sense resistor for SilentStepStick2130
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #define X_CURRENT          800  // rms current in mA. Multiply by 1.41 for peak current.
   #define X_MICROSTEPS        16  // 0..256
 
-  #define Y_CURRENT          800
+  #define Y_CURRENT          600
   #define Y_MICROSTEPS        16
 
-  #define Z_CURRENT          800
+  #define Z_CURRENT          700
   #define Z_MICROSTEPS        16
 
   #define X2_CURRENT         800
@@ -1134,6 +1149,22 @@
   #define E4_MICROSTEPS       16
 
   /**
+   * Override default SPI pins for TMC2130 and TMC2660 drivers here.
+   * The default pins can be found in your board's pins file.
+   */
+  //#define X_CS_PIN          -1
+  //#define Y_CS_PIN          -1
+  //#define Z_CS_PIN          -1
+  //#define X2_CS_PIN         -1
+  //#define Y2_CS_PIN         -1
+  //#define Z2_CS_PIN         -1
+  //#define E0_CS_PIN         -1
+  //#define E1_CS_PIN         -1
+  //#define E2_CS_PIN         -1
+  //#define E3_CS_PIN         -1
+  //#define E4_CS_PIN         -1
+
+  /**
    * Use software SPI for TMC2130.
    * The default SW SPI pins are defined the respective pins files,
    * but you can override or define them here.
@@ -1144,6 +1175,7 @@
   //#define TMC_SW_SCK        -1
 
   /**
+   * TMC2130, TMC2208 only
    * Use Trinamic's ultra quiet stepping mode.
    * When disabled, Marlin will use spreadCycle stepping mode.
    */
@@ -1185,12 +1217,13 @@
   #endif
 
   /**
+   * TMC2130, TMC2208 only
    * The driver will switch to spreadCycle when stepper speed is over HYBRID_THRESHOLD.
    * This mode allows for faster movements at the expense of higher noise levels.
    * STEALTHCHOP needs to be enabled.
    * M913 X/Y/Z/E to live tune the setting
    */
-  //#define HYBRID_THRESHOLD
+  #define HYBRID_THRESHOLD
 
   #define X_HYBRID_THRESHOLD     100  // [mm/s]
   #define X2_HYBRID_THRESHOLD    100
@@ -1205,6 +1238,7 @@
   #define E4_HYBRID_THRESHOLD     30
 
   /**
+   * TMC2130, TMC2660 only
    * Use stallGuard2 to sense an obstacle and trigger an endstop.
    * You need to place a wire from the driver's DIAG1 pin to the X/Y endstop pin.
    * X, Y, and Z homing will always be done in spreadCycle mode.
@@ -1216,7 +1250,7 @@
    * It is advised to set X/Y/Z_HOME_BUMP_MM to 0.
    * M914 X/Y/Z to live tune the setting
    */
-  //#define SENSORLESS_HOMING // TMC2130 only
+  #define SENSORLESS_HOMING // TMC2130 only
 
   #if ENABLED(SENSORLESS_HOMING)
     #define X_HOMING_SENSITIVITY  8
@@ -1228,7 +1262,7 @@
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */
-  //#define TMC_DEBUG
+  #define TMC_DEBUG
 
   /**
    * M915 Z Axis Calibration

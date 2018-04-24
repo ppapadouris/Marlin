@@ -36,12 +36,12 @@
 // Includes
 //
 //#include <WInterrupts.h>
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 #include <stdint.h>
 #include <stdarg.h>
 #include <Arduino.h>
 #include <pinmapping.h>
-#include "fastio.h"
+#include "../fastio.h"
 #include "SoftwareSerial.h"
 
 void GpioEnableInt(uint32_t port, uint32_t pin, uint32_t mode);
