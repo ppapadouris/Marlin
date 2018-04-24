@@ -83,10 +83,12 @@ void tmc_set_sgt(TMC &st, const TMC_AxisEnum axis, const int8_t sgt_val) {
 }
 
 void monitor_tmc_driver();
+void test_tmc_connection();
 
 #if ENABLED(TMC_DEBUG)
   void tmc_set_report_status(const bool status);
   void tmc_report_all();
+  void tmc_get_registers();
 #endif
 
 /**
