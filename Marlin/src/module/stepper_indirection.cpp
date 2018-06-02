@@ -487,6 +487,160 @@
   }
 #endif // HAVE_TMC2208
 
+//
+// TMC5160 Driver objects and inits
+//
+#if ENABLED(HAVE_TMC5160)
+
+  #include <SPI.h>
+  #include <TMCStepper.h>
+  #include "planner.h"
+  #include "../core/enum.h"
+
+  #if TMCSTEPPER_VERSION < 0x000001
+    #error "Update TMC2130Stepper library to 0.0.1 or newer."
+  #endif
+
+  #if ENABLED(TMC_USE_SW_SPI)
+    #define _TMC5160_DEFINE(ST) TMC5160Stepper stepper##ST(ST##_ENABLE_PIN, ST##_DIR_PIN, ST##_STEP_PIN, ST##_CS_PIN, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
+  #else
+    #define _TMC5160_DEFINE(ST) TMC5160Stepper stepper##ST(ST##_CS_PIN, R_SENSE)
+  #endif
+
+  // Stepper objects of TMC2130 steppers used
+  #if ENABLED(X_IS_TMC5160)
+    _TMC5160_DEFINE(X);
+  #endif
+  #if ENABLED(X2_IS_TMC5160)
+    _TMC5160_DEFINE(X2);
+  #endif
+  #if ENABLED(Y_IS_TMC5160)
+    _TMC5160_DEFINE(Y);
+  #endif
+  #if ENABLED(Y2_IS_TMC5160)
+    _TMC5160_DEFINE(Y2);
+  #endif
+  #if ENABLED(Z_IS_TMC5160)
+    _TMC5160_DEFINE(Z);
+  #endif
+  #if ENABLED(Z2_IS_TMC5160)
+    _TMC5160_DEFINE(Z2);
+  #endif
+  #if ENABLED(E0_IS_TMC5160)
+    _TMC5160_DEFINE(E0);
+  #endif
+  #if ENABLED(E1_IS_TMC5160)
+    _TMC5160_DEFINE(E1);
+  #endif
+  #if ENABLED(E2_IS_TMC5160)
+    _TMC5160_DEFINE(E2);
+  #endif
+  #if ENABLED(E3_IS_TMC5160)
+    _TMC5160_DEFINE(E3);
+  #endif
+  #if ENABLED(E4_IS_TMC5160)
+    _TMC5160_DEFINE(E4);
+  #endif
+
+  // Use internal reference voltage for current calculations. This is the default.
+  // Following values from Trinamic's spreadsheet with values for a NEMA17 (42BYGHW609)
+  // https://www.trinamic.com/products/integrated-circuits/details/tmc2130/
+  void tmc5160_init(TMC5160Stepper &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
+    #if DISABLED(STEALTHCHOP) || DISABLED(HYBRID_THRESHOLD)
+      UNUSED(thrs);
+      UNUSED(spmm);
+    #endif
+    st.begin();
+    st.rms_current(mA, HOLD_MULTIPLIER);
+    st.microsteps(microsteps);
+    st.blank_time(24);
+    st.toff(5); // Only enables the driver if used with stealthChop
+    st.intpol(INTERPOLATE);
+    st.TPOWERDOWN(128); // ~2s until driver lowers to hold current
+    st.hysteresis_start(3);
+    st.hysteresis_end(2);
+    #if ENABLED(STEALTHCHOP)
+      st.pwm_freq(1); // f_pwm = 2/683 f_clk
+      st.pwm_autoscale(1);
+      st.pwm_grad(5);
+      st.pwm_ampl(255);
+      st.en_pwm_mode(1);
+      #if ENABLED(HYBRID_THRESHOLD)
+        st.stealth_max_speed(12650000UL*microsteps/(256*thrs*spmm));
+      #endif
+    #elif ENABLED(SENSORLESS_HOMING)
+      st.coolstep_min_speed(1024UL * 1024UL - 1UL);
+    #endif
+    st.GSTAT(); // Clear GSTAT
+  }
+
+  #define _TMC5160_INIT(ST, SPMM) tmc5160_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, SPMM)
+
+  void tmc5160_init_to_defaults() {
+    #if ENABLED(X_IS_TMC5160)
+      _TMC5160_INIT( X, planner.axis_steps_per_mm[X_AXIS]);
+    #endif
+    #if ENABLED(X2_IS_TMC5160)
+      _TMC5160_INIT(X2, planner.axis_steps_per_mm[X_AXIS]);
+    #endif
+    #if ENABLED(Y_IS_TMC5160)
+      _TMC5160_INIT( Y, planner.axis_steps_per_mm[Y_AXIS]);
+    #endif
+    #if ENABLED(Y2_IS_TMC5160)
+      _TMC5160_INIT(Y2, planner.axis_steps_per_mm[Y_AXIS]);
+    #endif
+    #if ENABLED(Z_IS_TMC5160)
+      _TMC5160_INIT( Z, planner.axis_steps_per_mm[Z_AXIS]);
+    #endif
+    #if ENABLED(Z2_IS_TMC5160)
+      _TMC5160_INIT(Z2, planner.axis_steps_per_mm[Z_AXIS]);
+    #endif
+    #if ENABLED(E0_IS_TMC5160)
+      _TMC5160_INIT(E0, planner.axis_steps_per_mm[E_AXIS]);
+    #endif
+    #if ENABLED(E1_IS_TMC5160)
+      { constexpr int extruder = 1; _TMC5160_INIT(E1, planner.axis_steps_per_mm[E_AXIS_N]); }
+    #endif
+    #if ENABLED(E2_IS_TMC5160)
+      { constexpr int extruder = 2; _TMC5160_INIT(E2, planner.axis_steps_per_mm[E_AXIS_N]); }
+    #endif
+    #if ENABLED(E3_IS_TMC5160)
+      { constexpr int extruder = 3; _TMC5160_INIT(E3, planner.axis_steps_per_mm[E_AXIS_N]); }
+    #endif
+    #if ENABLED(E4_IS_TMC5160)
+      { constexpr int extruder = 4; _TMC5160_INIT(E4, planner.axis_steps_per_mm[E_AXIS_N]); }
+    #endif
+
+    #if ENABLED(SENSORLESS_HOMING)
+      #define TMC_INIT_SGT(P,Q) stepper##Q.sgt(P##_HOMING_SENSITIVITY);
+      #ifdef X_HOMING_SENSITIVITY
+        #if ENABLED(X_IS_TMC5160) || ENABLED(IS_TRAMS)
+          stepperX.sgt(X_HOMING_SENSITIVITY);
+        #endif
+        #if ENABLED(X2_IS_TMC5160)
+          stepperX2.sgt(X_HOMING_SENSITIVITY);
+        #endif
+      #endif
+      #ifdef Y_HOMING_SENSITIVITY
+        #if ENABLED(Y_IS_TMC5160) || ENABLED(IS_TRAMS)
+          stepperY.sgt(Y_HOMING_SENSITIVITY);
+        #endif
+        #if ENABLED(Y2_IS_TMC5160)
+          stepperY2.sgt(Y_HOMING_SENSITIVITY);
+        #endif
+      #endif
+      #ifdef Z_HOMING_SENSITIVITY
+        #if ENABLED(Z_IS_TMC5160) || ENABLED(IS_TRAMS)
+          stepperZ.sgt(Z_HOMING_SENSITIVITY);
+        #endif
+        #if ENABLED(Z2_IS_TMC5160)
+          stepperZ2.sgt(Z_HOMING_SENSITIVITY);
+        #endif
+      #endif
+    #endif
+  }
+#endif // HAVE_TMC5160
+
 void restore_stepper_drivers() {
   #if X_IS_TRINAMIC
     stepperX.push();
@@ -534,6 +688,10 @@ void reset_stepper_drivers() {
   #if ENABLED(HAVE_TMC2208)
     delay(100);
     tmc2208_init_to_defaults();
+  #endif
+  #if ENABLED(HAVE_TMC5160)
+    delay(100);
+    tmc5160_init_to_defaults();
   #endif
   #ifdef TMC_ADV
     TMC_ADV()

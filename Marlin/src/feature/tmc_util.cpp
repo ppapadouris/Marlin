@@ -52,7 +52,7 @@ bool report_tmc_status = false;
     bool is_ot;
     bool is_error;
   };
-  #if ENABLED(HAVE_TMC2130)
+  #if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC5160)
     static uint32_t get_pwm_scale(TMC2130Stepper &st) { return st.PWM_SCALE(); }
     static uint8_t get_status_response(TMC2130Stepper &st) { return st.status_response & 0xF; }
     static TMC_driver_data get_driver_data(TMC2130Stepper &st) {
@@ -124,16 +124,16 @@ bool report_tmc_status = false;
       SERIAL_ECHOPGM(": ");
       _tmc_say_axis(axis);
       SERIAL_ECHOPGM(" driver overtemperature warning! (");
-      SERIAL_ECHO(st.getCurrent());
+      SERIAL_ECHO(st.getMilliamps());
       SERIAL_ECHOLNPGM("mA)");
     }
     #if CURRENT_STEP_DOWN > 0
       // Decrease current if is_otpw is true and driver is enabled and there's been more than 4 warnings
       if (data.is_otpw && st.isEnabled() && otpw_cnt > 4) {
-        st.setCurrent(st.getCurrent() - CURRENT_STEP_DOWN, R_SENSE, HOLD_MULTIPLIER);
+        st.rms_current(st.getMilliamps() - CURRENT_STEP_DOWN, HOLD_MULTIPLIER);
         #if ENABLED(REPORT_CURRENT_CHANGE)
           _tmc_say_axis(axis);
-          SERIAL_ECHOLNPAIR(" current decreased to ", st.getCurrent());
+          SERIAL_ECHOLNPAIR(" current decreased to ", st.getMilliamps());
         #endif
       }
     #endif
@@ -159,7 +159,7 @@ bool report_tmc_status = false;
     }
   }
 
-  #define HAS_HW_COMMS(ST) ENABLED(ST##_IS_TMC2130)|| (ENABLED(ST##_IS_TMC2208) && defined(ST##_HARDWARE_SERIAL))
+  #define HAS_HW_COMMS(ST) ENABLED(ST##_IS_TMC2130) || ENABLED(ST##_IS_TMC5160) || (ENABLED(ST##_IS_TMC2208) && defined(ST##_HARDWARE_SERIAL))
 
   void monitor_tmc_driver() {
     static millis_t next_cOT = 0;
@@ -311,13 +311,13 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     SERIAL_EOL();
   }
 
-  #if ENABLED(HAVE_TMC2130)
-    static void tmc_status(TMC2130Stepper &st, const TMC_debug_enum i) {
+  #if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC5160)
+    static void _tmc_status(TMC2130Stepper &st, const TMC_debug_enum i) {
       switch (i) {
         case TMC_PWM_SCALE: SERIAL_PRINT(st.PWM_SCALE(), DEC); break;
         case TMC_TSTEP: SERIAL_ECHO(st.TSTEP()); break;
         case TMC_SGT: SERIAL_PRINT(st.sgt(), DEC); break;
-        case TMC_STEALTHCHOP: serialprintPGM(st.stealthChop() ? PSTR("true") : PSTR("false")); break;
+        case TMC_STEALTHCHOP: serialprintPGM(st.en_pwm_mode() ? PSTR("true") : PSTR("false")); break;
         default: break;
       }
     }
@@ -327,6 +327,22 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
         case TMC_SG_RESULT:  SERIAL_PRINT(st.sg_result(), DEC);   break;
         case TMC_FSACTIVE:   if (st.fsactive())   SERIAL_CHAR('X'); break;
         default: break;
+      }
+    }
+  #endif
+
+  #if ENABLED(HAVE_TMC2130)
+    static void tmc_status(TMC2130Stepper &st, const TMC_debug_enum i) {
+      switch (i) {
+        case TMC_VSENSE: serialprintPGM(st.vsense() ? PSTR("1=.18") : PSTR("0=.325")); break;
+        default: _tmc_status(st, i); break;
+      }
+    }
+  #endif
+  #if ENABLED(HAVE_TMC5160)
+    static void tmc_status(TMC5160Stepper &st, const TMC_debug_enum i) {
+      switch (i) {
+        default: _tmc_status(st, i); break;
       }
     }
   #endif
@@ -359,7 +375,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     switch (i) {
       case TMC_CODES: _tmc_say_axis(axis); break;
       case TMC_ENABLED: serialprintPGM(st.isEnabled() ? PSTR("true") : PSTR("false")); break;
-      case TMC_CURRENT: SERIAL_ECHO(st.getCurrent()); break;
+      case TMC_CURRENT: SERIAL_ECHO(st.getMilliamps()); break;
       case TMC_RMS_CURRENT: SERIAL_PROTOCOL(st.rms_current()); break;
       case TMC_MAX_CURRENT: SERIAL_PRINT((float)st.rms_current() * 1.41, 0); break;
       case TMC_IRUN:
@@ -374,9 +390,6 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
         SERIAL_PRINT(st.cs_actual(), DEC);
         SERIAL_ECHOPGM("/31");
         break;
-
-      case TMC_VSENSE: serialprintPGM(st.vsense() ? PSTR("1=.18") : PSTR("0=.325")); break;
-
       case TMC_MICROSTEPS: SERIAL_ECHO(st.microsteps()); break;
       case TMC_TPWMTHRS: {
           uint32_t tpwmthrs_val = st.TPWMTHRS();
@@ -553,7 +566,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     TMC_REPORT("Stallguard thrs",    TMC_SGT);
 
     DRV_REPORT("DRVSTATUS",          TMC_DRV_CODES);
-    #if ENABLED(HAVE_TMC2130)
+    #if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC5160)
       DRV_REPORT("stallguard\t",     TMC_STALLGUARD);
       DRV_REPORT("sg_result\t",      TMC_SG_RESULT);
       DRV_REPORT("fsactive\t",       TMC_FSACTIVE);
@@ -583,48 +596,50 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
 
   void tmc_sensorless_homing(TMC2130Stepper &st, const bool enable/*=true*/) {
     #if ENABLED(STEALTHCHOP)
-      st.coolstep_min_speed(enable ? 1024UL * 1024UL - 1UL : 0);
-      st.stealthChop(!enable);
+      st.TCOOLTHRS(enable ? 1024UL * 1024UL - 1UL : 0);
+      st.en_pwm_mode(!enable);
     #endif
     st.diag1_stall(enable ? 1 : 0);
   }
 
 #endif // SENSORLESS_HOMING
 
-#if ENABLED(HAVE_TMC2130)
+#define IS_TMC_SPI(ST) ENABLED(ST##_IS_TMC2130) || ENABLED(ST##_IS_TMC5160)
+
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC5160)
   #define SET_CS_PIN(st) OUT_WRITE(st##_CS_PIN, HIGH)
   void tmc_init_cs_pins() {
-    #if ENABLED(X_IS_TMC2130)
+    #if IS_TMC_SPI(X)
       SET_CS_PIN(X);
     #endif
-    #if ENABLED(Y_IS_TMC2130)
+    #if IS_TMC_SPI(Y)
       SET_CS_PIN(Y);
     #endif
-    #if ENABLED(Z_IS_TMC2130)
+    #if IS_TMC_SPI(Z)
       SET_CS_PIN(Z);
     #endif
-    #if ENABLED(X2_IS_TMC2130)
+    #if IS_TMC_SPI(X2)
       SET_CS_PIN(X2);
     #endif
-    #if ENABLED(Y2_IS_TMC2130)
+    #if IS_TMC_SPI(Y2)
       SET_CS_PIN(Y2);
     #endif
-    #if ENABLED(Z2_IS_TMC2130)
+    #if IS_TMC_SPI(Z2)
       SET_CS_PIN(Z2);
     #endif
-    #if ENABLED(E0_IS_TMC2130)
+    #if IS_TMC_SPI(E0)
       SET_CS_PIN(E0);
     #endif
-    #if ENABLED(E1_IS_TMC2130)
+    #if IS_TMC_SPI(E1)
       SET_CS_PIN(E1);
     #endif
-    #if ENABLED(E2_IS_TMC2130)
+    #if IS_TMC_SPI(E2)
       SET_CS_PIN(E2);
     #endif
-    #if ENABLED(E3_IS_TMC2130)
+    #if IS_TMC_SPI(E3)
       SET_CS_PIN(E3);
     #endif
-    #if ENABLED(E4_IS_TMC2130)
+    #if IS_TMC_SPI(E4)
       SET_CS_PIN(E4);
     #endif
   }

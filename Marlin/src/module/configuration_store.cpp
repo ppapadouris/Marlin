@@ -669,57 +669,57 @@ void MarlinSettings::postprocess() {
     uint16_t tmc_stepper_current[TMC_AXES] = {
       #if HAS_TRINAMIC
         #if X_IS_TRINAMIC
-          stepperX.getCurrent(),
+          stepperX.getMilliamps(),
         #else
           0,
         #endif
         #if Y_IS_TRINAMIC
-          stepperY.getCurrent(),
+          stepperY.getMilliamps(),
         #else
           0,
         #endif
         #if Z_IS_TRINAMIC
-          stepperZ.getCurrent(),
+          stepperZ.getMilliamps(),
         #else
           0,
         #endif
         #if X2_IS_TRINAMIC
-          stepperX2.getCurrent(),
+          stepperX2.getMilliamps(),
         #else
           0,
         #endif
         #if Y2_IS_TRINAMIC
-          stepperY2.getCurrent(),
+          stepperY2.getMilliamps(),
         #else
           0,
         #endif
         #if Z2_IS_TRINAMIC
-          stepperZ2.getCurrent(),
+          stepperZ2.getMilliamps(),
         #else
           0,
         #endif
         #if E0_IS_TRINAMIC
-          stepperE0.getCurrent(),
+          stepperE0.getMilliamps(),
         #else
           0,
         #endif
         #if E1_IS_TRINAMIC
-          stepperE1.getCurrent(),
+          stepperE1.getMilliamps(),
         #else
           0,
         #endif
         #if E2_IS_TRINAMIC
-          stepperE2.getCurrent(),
+          stepperE2.getMilliamps(),
         #else
           0,
         #endif
         #if E3_IS_TRINAMIC
-          stepperE3.getCurrent(),
+          stepperE3.getMilliamps(),
         #else
           0,
         #endif
         #if E4_IS_TRINAMIC
-          stepperE4.getCurrent()
+          stepperE4.getMilliamps()
         #else
           0
         #endif
@@ -1285,7 +1285,7 @@ void MarlinSettings::postprocess() {
 
       #if HAS_TRINAMIC
 
-        #define SET_CURR(Q) stepper##Q.setCurrent(currents[TMC_##Q] ? currents[TMC_##Q] : Q##_CURRENT, R_SENSE, HOLD_MULTIPLIER)
+        #define SET_CURR(Q) stepper##Q.rms_current(currents[TMC_##Q] ? currents[TMC_##Q] : Q##_CURRENT, HOLD_MULTIPLIER)
         uint16_t currents[TMC_AXES];
         EEPROM_READ(currents);
         if (!validating) {
@@ -2411,47 +2411,47 @@ void MarlinSettings::reset(PORTARG_SOLO) {
       CONFIG_ECHO_START;
       #if X_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "X", stepperX.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "X", stepperX.getMilliamps());
       #endif
       #if X2_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "I1 X", stepperX2.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "I1 X", stepperX2.getMilliamps());
       #endif
       #if Y_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "Y", stepperY.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "Y", stepperY.getMilliamps());
       #endif
       #if Y2_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "I1 Y", stepperY2.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "I1 Y", stepperY2.getMilliamps());
       #endif
       #if Z_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "Z", stepperZ.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "Z", stepperZ.getMilliamps());
       #endif
       #if Z2_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "I1 Z", stepperZ2.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "I1 Z", stepperZ2.getMilliamps());
       #endif
       #if E0_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "T0 E", stepperE0.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "T0 E", stepperE0.getMilliamps());
       #endif
       #if E_STEPPERS > 1 && E1_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "T1 E", stepperE1.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "T1 E", stepperE1.getMilliamps());
       #endif
       #if E_STEPPERS > 2 && E2_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "T2 E", stepperE2.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "T2 E", stepperE2.getMilliamps());
       #endif
       #if E_STEPPERS > 3 && E3_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "T3 E", stepperE3.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "T3 E", stepperE3.getMilliamps());
       #endif
       #if E_STEPPERS > 4 && E4_IS_TRINAMIC
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, "T4 E", stepperE4.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, "T4 E", stepperE4.getMilliamps());
       #endif
       SERIAL_EOL_P(port);
 

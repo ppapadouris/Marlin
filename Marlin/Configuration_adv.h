@@ -1086,6 +1086,20 @@
   //#define E3_IS_TMC2130
   //#define E4_IS_TMC2130
 #endif
+//#define HAVE_TMC5160
+#if ENABLED(HAVE_TMC5160)  // Choose your axes here. This is mandatory!
+  //#define X_IS_TMC5160
+  //#define X2_IS_TMC5160
+  //#define Y_IS_TMC5160
+  //#define Y2_IS_TMC5160
+  //#define Z_IS_TMC5160
+  //#define Z2_IS_TMC5160
+  //#define E0_IS_TMC5160
+  //#define E1_IS_TMC5160
+  //#define E2_IS_TMC5160
+  //#define E3_IS_TMC5160
+  //#define E4_IS_TMC5160
+#endif
 
 /**
  * Enable this for SilentStepStick Trinamic TMC2208 UART-configurable stepper drivers.
@@ -1112,7 +1126,7 @@
   //#define E4_IS_TMC2208
 #endif
 
-#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208)
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC5160)
 
   #define R_SENSE           0.11  // R_sense resistor for SilentStepStick2130
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
@@ -1262,7 +1276,7 @@
    */
   #define TMC_ADV() {  }
 
-#endif // TMC2130 || TMC2208
+#endif // TMC2130 || TMC2208 || TMC5160
 
 // @section L6470
 

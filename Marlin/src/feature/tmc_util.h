@@ -33,6 +33,10 @@
   #include <TMC2208Stepper.h>
 #endif
 
+#if ENABLED(HAVE_TMC5160)
+  #include <TMCStepper.h>
+#endif
+
 extern bool report_tmc_status;
 
 enum TMC_AxisEnum : char { TMC_X, TMC_Y, TMC_Z, TMC_X2, TMC_Y2, TMC_Z2, TMC_E0, TMC_E1, TMC_E2, TMC_E3, TMC_E4 };
@@ -50,11 +54,11 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt);
 
 template<typename TMC>
 void tmc_get_current(TMC &st, const TMC_AxisEnum axis) {
-  _tmc_say_current(axis, st.getCurrent());
+  _tmc_say_current(axis, st.getMilliamps());
 }
 template<typename TMC>
 void tmc_set_current(TMC &st, const int mA) {
-  st.setCurrent(mA, R_SENSE, HOLD_MULTIPLIER);
+  st.rms_current(mA, HOLD_MULTIPLIER);
 }
 template<typename TMC>
 void tmc_report_otpw(TMC &st, const TMC_AxisEnum axis) {
@@ -100,7 +104,7 @@ void monitor_tmc_driver();
   void tmc_sensorless_homing(TMC2130Stepper &st, const bool enable=true);
 #endif
 
-#if ENABLED(HAVE_TMC2130)
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC5160)
   void tmc_init_cs_pins();
 #endif
 

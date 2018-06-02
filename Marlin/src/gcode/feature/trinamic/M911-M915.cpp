@@ -30,7 +30,7 @@
 #include "../../../module/planner.h"
 #include "../../queue.h"
 
-#define M91x_USE(A) (ENABLED(A##_IS_TMC2130) || (ENABLED(A##_IS_TMC2208) && PIN_EXISTS(A##_SERIAL_RX)))
+#define M91x_USE(A) (ENABLED(A##_IS_TMC2130) || ENABLED(A##_IS_TMC5160) || (ENABLED(A##_IS_TMC2208) && PIN_EXISTS(A##_SERIAL_RX)))
 #define M91x_USE_E(N) (E_STEPPERS > N && M91x_USE(E##N))
 #define M91x_USE_X  (ENABLED(IS_TRAMS) || M91x_USE(X))
 #define M91x_USE_Y  (ENABLED(IS_TRAMS) || M91x_USE(Y))
@@ -338,12 +338,12 @@ void GcodeSuite::M912() {
     }
 
     #if Z_IS_TRINAMIC
-      const uint16_t Z_current_1 = stepperZ.getCurrent();
-      stepperZ.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+      const uint16_t Z_current_1 = stepperZ.getMilliamps();
+      stepperZ.rms_current(_rms, HOLD_MULTIPLIER);
     #endif
     #if Z2_IS_TRINAMIC
-      const uint16_t Z2_current_1 = stepperZ2.getCurrent();
-      stepperZ2.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+      const uint16_t Z2_current_1 = stepperZ2.getMilliamps();
+      stepperZ2.rms_current(_rms, HOLD_MULTIPLIER);
     #endif
 
     SERIAL_ECHOPAIR("\nCalibration current: Z", _rms);
@@ -353,10 +353,10 @@ void GcodeSuite::M912() {
     do_blocking_move_to_z(Z_MAX_POS+_z);
 
     #if Z_IS_TRINAMIC
-      stepperZ.setCurrent(Z_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ.rms_current(Z_current_1, HOLD_MULTIPLIER);
     #endif
     #if Z2_IS_TRINAMIC
-      stepperZ2.setCurrent(Z2_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ2.rms_current(Z2_current_1, HOLD_MULTIPLIER);
     #endif
 
     do_blocking_move_to_z(Z_MAX_POS);

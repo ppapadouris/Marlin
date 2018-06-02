@@ -1532,7 +1532,7 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
     #error "CoreYZ requires both Y and Z to use sensorless homing if either does."
   #endif
 
-#elif ENABLED(SENSORLESS_HOMING)
+#elif ENABLED(SENSORLESS_HOMING) && DISABLED(HAVE_TMC5160)
 
   #error "SENSORLESS_HOMING requires TMC2130 stepper drivers."
 
