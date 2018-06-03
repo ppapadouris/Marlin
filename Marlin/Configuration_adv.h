@@ -1086,11 +1086,11 @@
   //#define E3_IS_TMC2130
   //#define E4_IS_TMC2130
 #endif
-//#define HAVE_TMC5160
+#define HAVE_TMC5160
 #if ENABLED(HAVE_TMC5160)  // Choose your axes here. This is mandatory!
-  //#define X_IS_TMC5160
+  #define X_IS_TMC5160
   //#define X2_IS_TMC5160
-  //#define Y_IS_TMC5160
+  #define Y_IS_TMC5160
   //#define Y2_IS_TMC5160
   //#define Z_IS_TMC5160
   //#define Z2_IS_TMC5160
@@ -1128,7 +1128,7 @@
 
 #if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC5160)
 
-  #define R_SENSE           0.11  // R_sense resistor for SilentStepStick2130
+  #define R_SENSE           0.15  // R_sense resistor for SilentStepStick2130
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
@@ -1179,7 +1179,7 @@
    * Use Trinamic's ultra quiet stepping mode.
    * When disabled, Marlin will use spreadCycle stepping mode.
    */
-  #define STEALTHCHOP
+  //#define STEALTHCHOP
 
   /**
    * Monitor Trinamic TMC2130 and TMC2208 drivers for error conditions,
@@ -1244,7 +1244,7 @@
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */
-  //#define TMC_DEBUG
+  #define TMC_DEBUG
 
   /**
    * M915 Z Axis Calibration
