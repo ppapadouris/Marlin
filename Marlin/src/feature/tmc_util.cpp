@@ -338,7 +338,13 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     static void tmc_status(TMC2130Stepper &st, const TMC_debug_enum i) {
       switch (i) {
         case TMC_PWM_SCALE: SERIAL_PRINT(st.PWM_SCALE(), DEC); break;
-        case TMC_TSTEP: SERIAL_ECHO(st.TSTEP()); break;
+        case TMC_TSTEP:
+          uint32_t tstep_value = st.TSTEP();
+          if (tstep_value == 0xFFFFF)
+            SERIAL_ECHOPGM("stst");
+          else
+            SERIAL_ECHO(tstep_value);
+          break;
         case TMC_SGT: SERIAL_PRINT(st.sgt(), DEC); break;
         case TMC_STEALTHCHOP: serialprintPGM(st.stealthChop() ? PSTR("true") : PSTR("false")); break;
         default: break;
